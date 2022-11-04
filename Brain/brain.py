@@ -25,9 +25,8 @@ class Brain:
 
 if __name__ == '__main__':
     # test brain
-    #text = input('Enter text: ')
-    text = 'Who is the director of Good Will Hunting?'
-    brain = Brain(text)
+    text = input('Enter text: ')
+    brain = Brain(text.rstrip("?"))
     print(text)
     print(brain.ner)
     # print(brain.intent)
