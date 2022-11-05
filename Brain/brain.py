@@ -1,33 +1,43 @@
 # TODO: intelligence for chatbot
+from intent.intent_recognition import IntentRecognizer
 from ner.entity_recognizer import EntityRecognizer
 
 class Brain:
     # initialize brain class
     def __init__(self, text: str):
-        self.ner = self.ner(text)
-        # self.intent = self.intent()
-        # self.response = self.response()
+        self.pred, self.entities = self.ner(text)
+        self.intent = self.intent(text)
+        self.classification = self.classification(self.entities)
 
     # named entity recognition
-    def ner(self, text: str) -> list:
+    def ner(self, text: str) -> tuple:
         # entities from entity recognizer
         movie_ner = EntityRecognizer()
-        entities = movie_ner.extract_entities(text)
-        return entities
+        pred, entities = movie_ner.extract_entities(text)
+        print(entities)
+        return pred, entities
 
     # intent recognition
-    def intent(self, text: str) -> str:
-        pass
+    def intent(self, text: str) -> list:
+        movie_intent = IntentRecognizer()
+        intent = movie_intent.extract_intent(text)
+        return intent
 
-    # response generation
-    def response(self, text: str) -> str:
-        pass
+    # classify recognized entities
+    def classification(self, entities: dict) -> str:
+        for entity in entities.keys():
+            if entity == 'title':
+                return 'movie'
+            elif entity == 'actor':
+                return 'person'
+            elif entity == 'genre':
+                return 'genre'
+            else:
+                return 'unknown'
 
 if __name__ == '__main__':
     # test brain
-    text = input('Enter text: ')
-    brain = Brain(text.rstrip("?"))
+    text = 'Who is the director of Top Gun: Maverick?'
+    brain = Brain(text)
     print(text)
-    print(brain.ner)
-    # print(brain.intent)
-    # print(brain.response)
+    print(brain.classification)

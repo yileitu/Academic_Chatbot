@@ -52,3 +52,29 @@ def sent2features(sent):
 
 def sent2labels(sent):
     return [label for token, postag, label in sent]
+
+# from prediction to entity
+def pred2entity(pred):
+   entities = {} 
+   entity = ''
+   label = ''
+   for i, (w, t) in enumerate(pred):
+      if t != 'O':
+         if pred[i-1][1][2:] != t[2:]:
+            if entity != '' and label != '':
+               if label in entities:
+                  entities[label].append(entity)
+               else:
+                  entities[label] = [entity]
+               entity = ''
+               label = ''
+            entity = w
+            label = t[2:].lower()
+         else:
+            entity = entity + ' ' + w
+   if entity != '' and label != '':
+      if label in entities:
+         entities[label].append(entity)
+      else:
+         entities[label] = entity
+   return entities
