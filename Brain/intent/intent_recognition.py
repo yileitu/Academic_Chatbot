@@ -36,7 +36,7 @@ class IntentRecognizer:
         # extract intent
         most_likely = dist.argsort()
         # find top match
-        top_match = [
+        top_matches = [
             (
                 properties_exp.loc[properties_exp['PropertyLabel']
                                 == intent_labels[index], 'Property'].values[0],
@@ -44,8 +44,8 @@ class IntentRecognizer:
                 dist[index],  # score
                 rank + 1,  # rank
             )
-            for rank, index in enumerate(most_likely[:4])]
-        return top_match
+            for rank, index in enumerate(most_likely[:5])]
+        return top_matches
 
 if __name__ == '__main__':
     # test intent recognition

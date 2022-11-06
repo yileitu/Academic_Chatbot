@@ -78,3 +78,16 @@ def pred2entity(pred):
       else:
          entities[label] = entity
    return entities
+
+# match entities to knowledge base
+def match_entities(ent, exact_match, ent2lbl, entities):
+    if ent in ent2lbl:
+        exact_match[ent] = ent2lbl[ent]
+    else:
+        fuzzy_match = entities.loc[entities['EntityLabel'].str.lower().str.contains(ent.lower(), regex=False), 'Entity'].values
+        print(f"Fuzzy match for {ent}: {fuzzy_match}")
+        if len(fuzzy_match) > 0:
+            exact_match[ent] = fuzzy_match[0]
+        else:
+            exact_match[ent] = 'unknown'
+    return exact_match

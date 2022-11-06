@@ -1,13 +1,15 @@
 # TODO: intelligence for chatbot
-from intent.intent_recognition import IntentRecognizer
-from ner.entity_recognizer import EntityRecognizer
+from Brain.ner.entity_matcher import EntityMatcher
+from Brain.intent.intent_recognition import IntentRecognizer
+from Brain.ner.entity_recognizer import EntityRecognizer
 
 class Brain:
     # initialize brain class
-    def __init__(self, text: str):
+    def __init__(self, graph, ent2lbl, text: str):
+        self.graph = graph
+        self.ent2lbl = ent2lbl
         self.pred, self.entities = self.ner(text)
-        self.intent = self.intent(text)
-        self.classification = self.classification(self.entities)
+        self.movie_intent = self.intent(text)
 
     # named entity recognition
     def ner(self, text: str) -> tuple:
@@ -19,21 +21,43 @@ class Brain:
 
     # intent recognition
     def intent(self, text: str) -> list:
-        movie_intent = IntentRecognizer()
-        intent = movie_intent.extract_intent(text)
+        recognizer = IntentRecognizer()
+        movie_intent = recognizer.extract_intent(text)
+        # fuzzy match of movie intent and self.entities
+        for int in movie_intent:
+            for ent in self.entities.keys():
+                if ent.lower() in int[1].lower():
+                    intent = int[0]
+        if not intent:
+            intent = movie_intent[0][0]
         return intent
 
-    # classify recognized entities
-    def classification(self, entities: dict) -> str:
-        for entity in entities.keys():
-            if entity == 'title':
-                return 'movie'
-            elif entity == 'actor':
-                return 'person'
-            elif entity == 'genre':
-                return 'genre'
+    # TODO: complete different classes
+    # classification of entities
+    def ent_classifier(self, entities: dict) -> dict:
+        ent_class = {}
+        for ent in entities.keys():
+            if ent == 'title':
+                ent_class[ent] = 'movie'
+            elif ent == 'actor':
+                ent_class[ent] = 'actor'
+            elif ent == 'director':
+                ent_class[ent] = 'director'
+            elif ent == 'genre':
+                ent_class[ent] = 'genre'
+            elif ent == 'character':
+                ent_class[ent] = 'character'
+            elif ent == 'year':
+                ent_class[ent] = 'year'
             else:
-                return 'unknown'
+                ent_class[ent] = 'unknown'
+        return ent_class
+
+    # find entities in Knowledge Graph
+    def ent_matcher(self, entities: dict) -> str:
+        matcher = EntityMatcher(self.graph, self.ent2lbl)
+        entity = matcher.match(entities)
+        return entity
 
 if __name__ == '__main__':
     # test brain

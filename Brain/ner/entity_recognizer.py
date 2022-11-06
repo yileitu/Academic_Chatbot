@@ -2,7 +2,7 @@ import pickle
 import os
 
 from nltk import word_tokenize, pos_tag
-from ner.utils.utils import pred2entity, sent2features
+from Brain.ner.utils.utils import pred2entity, sent2features
 
 class EntityRecognizer:
     def __init__(self, crf=None):
