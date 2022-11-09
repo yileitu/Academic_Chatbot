@@ -7,7 +7,7 @@ import csv
 class KnowledgeGraph(object):
     def __init__(self):
         # load the knowledge graph
-        with open ('data/KG.pickle', 'rb') as f:
+        with open ('data/fixed_graph.pickle', 'rb') as f:
             self.graph = pickle.load(f)
         # load the embeddings
         self.entity_emb = np.load('data/ddis-graph-embeddings/entity_embeds.npy')

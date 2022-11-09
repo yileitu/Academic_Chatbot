@@ -2,6 +2,7 @@
 from Brain.ner.entity_matcher import EntityMatcher
 from Brain.intent.intent_recognition import IntentRecognizer
 from Brain.ner.entity_recognizer import EntityRecognizer
+from Brain.utils import detect_casing, load_crf_model
 
 class Brain:
     # initialize brain class
@@ -14,7 +15,9 @@ class Brain:
     # named entity recognition
     def ner(self, text: str) -> tuple:
         # entities from entity recognizer
-        movie_ner = EntityRecognizer()
+        casing = detect_casing(text)
+        crf = load_crf_model(casing)
+        movie_ner = EntityRecognizer(crf)
         pred, entities = movie_ner.extract_entities(text)
         print(entities)
         return pred, entities

@@ -34,7 +34,8 @@ if __name__ == '__main__':
     #ent = {'title': 'The Godfather', 'actor': 'Al Pacino'}
     movie_agent = MovieAgent()
     text = "Hello, was Al Pacino in The Godfather"
-    pred, entities, intent, classification, match = movie_agent.user_wish(text)
+    text1 = "hi, please tell me if al pacino was in the godfather"
+    pred, entities, intent, classification, match = movie_agent.user_wish(text1)
     print(pred)
     print(entities)
     print(intent)
