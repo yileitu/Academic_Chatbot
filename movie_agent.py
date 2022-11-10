@@ -35,7 +35,8 @@ if __name__ == '__main__':
     movie_agent = MovieAgent()
     text = "Hello, was Al Pacino in The Godfather"
     text1 = "hi, please tell me if al pacino was in the godfather"
-    pred, entities, intent, classification, match = movie_agent.user_wish(text1)
+    text2 = "Hi, given that I like movies that Al Pacino starred in, what movies would you recommend?"
+    pred, entities, intent, classification, match = movie_agent.user_wish(text2)
     print(pred)
     print(entities)
     print(intent)

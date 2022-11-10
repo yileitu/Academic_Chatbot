@@ -26,14 +26,15 @@ class Brain:
     def intent(self, text: str) -> list:
         recognizer = IntentRecognizer()
         movie_intent = recognizer.extract_intent(text)
+        user_intent = ''
         # fuzzy match of movie intent and self.entities
         for int in movie_intent:
             for ent in self.entities.keys():
                 if ent.lower() in int[1].lower():
-                    intent = int[0]
-        if not intent:
-            intent = movie_intent[0][0]
-        return intent
+                    user_intent = int[0]
+        if user_intent == '':
+            user_intent = movie_intent[0][0]
+        return user_intent
 
     # TODO: complete different classes
     # classification of entities
