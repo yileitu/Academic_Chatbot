@@ -1,4 +1,5 @@
 from Brain.brain import Brain
+from Brain.question_types.embeddings import EmbeddingSimilarity
 from Knowledge.graph import KnowledgeGraph
 from Query.SPARQL import SPARQL
 from utils import question_patterns, question_similarity, question_type
@@ -21,6 +22,9 @@ class MovieAgent:
         self.SCHEMA = KG.SCHEMA
         self.entity_emb = KG.entity_emb
         self.relation_emb = KG.relation_emb
+        self.brain = Brain(self.graph, self.ent2lbl, self.rel2lbl, self.WDT)
+        self.embedding_sim = EmbeddingSimilarity(self.entity_emb, self.relation_emb, 
+            self.ent2lbl, self.lbl2ent, self.ent2id, self.id2ent, self.rel2id, self.WD, self.WDT)
         print('Movie agent initialized')
 
     def user_wish(self, text: str) -> str:
@@ -45,7 +49,7 @@ class MovieAgent:
             #return self.crowdsourcing(text)
         elif similarity == 'embedding':
             #TODO: implement embedding
-            return 'embedding'
+            return self.embedding_query(text)
             #return self.embedding(text)
         else:
             return "unknown"
@@ -54,15 +58,23 @@ class MovieAgent:
         """
         Returns the answer to a factual question
         """
-        brain = Brain(self.graph, self.ent2lbl, self.rel2lbl, self.WDT, text)
-        pred = brain.pred
-        entities = brain.entities
-        intent = brain.movie_intent
-        classification = brain.ent_classifier(entities)
-        match = brain.ent_matcher(entities)
+        pred, entities = self.brain.ner(text) # TODO: parse input text
+        intent = self.brain.intent(text) # TODO: clean parsed text to identify intent more easily
+        classification = self.brain.ent_classifier(entities)
+        match = self.brain.ent_matcher(entities)
         sparql = SPARQL(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.WDT, self.WD)
-        answer = sparql.get_answer((pred, entities, intent, classification, match))
+        answer = sparql.get_answer((pred, entities, intent, classification, match)) # TODO: answer formatter
         return answer
+
+    def embedding_query(self, text: str) -> str:
+        """
+        Returns the answer to an embedding question
+        """
+        pred, entities = self.brain.ner(text)
+        intent = self.brain.intent(text)
+        answer = self.embedding_sim.most_similar(entities, intent, 3)
+        return f"The {self.ent2lbl[self.WDT[intent.split('/')[-1]]]} of {list(entities.values())[0]} is {answer}."
+
 
 if __name__ == '__main__':
     #ent = {'title': 'The Godfather', 'actor': 'Al Pacino'}

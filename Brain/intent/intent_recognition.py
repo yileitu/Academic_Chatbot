@@ -52,7 +52,8 @@ if __name__ == '__main__':
     text = 'who is the director of'
     text1 = 'what is the genre of'
     text2 = 'who directed'
+    text3 = 'What is the MPAA film rating of'
     intent = IntentRecognizer()
-    intent = intent.extract_intent(text2)
-    print(text)
+    intent = intent.extract_intent(text3)
+    print(text3)
     print(intent)

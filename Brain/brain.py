@@ -8,13 +8,11 @@ from Brain.utils import detect_casing, load_crf_model
 
 class Brain:
     # initialize brain class
-    def __init__(self, graph, ent2lbl, rel2lbl, WDT, text: str):
+    def __init__(self, graph, ent2lbl, rel2lbl, WDT):
         self.graph = graph
         self.ent2lbl = ent2lbl
         self.rel2lbl = rel2lbl
         self.WDT = WDT
-        self.pred, self.entities = self.ner(text)
-        self.movie_intent = self.intent(text)
         print("Brain initialized")
 
     # named entity recognition
@@ -33,18 +31,18 @@ class Brain:
         movie_intent = recognizer.extract_intent(text)
         user_intent = ''
         # fuzzy match of movie intent and self.entities
-        tokens = text.split()
+        #tokens = text.split()
         min_dist = 1000
         for int in movie_intent:
-            for token in tokens:
-                # match substring of intent with text
-                clean_int = int[0].split('/')[-1]
-                if ldist(self.rel2lbl[self.WDT[clean_int]], token) < min_dist:
-                    min_dist = ldist(self.rel2lbl[self.WDT[clean_int]], token)
-                    user_intent = int[0]
-                # for ent in self.entities.keys():
-                #     if ent.lower() in int[1].lower():
-                #         user_intent = int[0]
+            #for token in tokens:
+            # match substring of intent with text
+            clean_int = int[0].split('/')[-1]
+            if ldist(self.rel2lbl[self.WDT[clean_int]], text) < min_dist: # TODO: 100% accurate matching
+                min_dist = ldist(self.rel2lbl[self.WDT[clean_int]], text)
+                user_intent = int[0]
+            # for ent in self.entities.keys():
+            #     if ent.lower() in int[1].lower():
+            #         user_intent = int[0]
         if user_intent == '':
             user_intent = movie_intent[0][0]
         return user_intent
