@@ -54,7 +54,7 @@ class MovieAgent:
         """
         Returns the answer to a factual question
         """
-        brain = Brain(self.graph, self.ent2lbl, text)
+        brain = Brain(self.graph, self.ent2lbl, self.rel2lbl, self.WDT, text)
         pred = brain.pred
         entities = brain.entities
         intent = brain.movie_intent
