@@ -4,13 +4,17 @@ import getpass
 import requests  # install the package via "pip install requests"
 from collections import defaultdict
 
+from movie_agent import MovieAgent
+
 # url of the speakeasy server
 url = 'https://speakeasy.ifi.uzh.ch'
 listen_freq = 3
 
 
-class DemoBot:
+class MovieBot:
     def __init__(self, username, password):
+        movie_agent = MovieAgent()
+        self.movie_agent = movie_agent
         self.agent_details = self.login(username, password)
         self.session_token = self.agent_details['sessionToken']
         self.chat_state = defaultdict(lambda: {'messages': defaultdict(dict), 'initiated': False, 'my_alias': None})
@@ -27,7 +31,7 @@ class DemoBot:
                     room_id = room['uid']
                     if not self.chat_state[room_id]['initiated']:
                         # send a welcome message and get the alias of the agent in the chatroom
-                        self.post_message(room_id=room_id, session_token=self.session_token, message='Hi, you can send me any message and check if it is echoed in {} seconds.'.format(listen_freq))
+                        self.post_message(room_id=room_id, session_token=self.session_token, message='Hi, I am a movie bot. Ask me about movies!')
                         self.chat_state[room_id]['initiated'] = True
                         self.chat_state[room_id]['my_alias'] = room['alias']
 
@@ -37,8 +41,8 @@ class DemoBot:
                     # you can also use ["reactions"] to get the reactions of the messages: STAR, THUMBS_UP, THUMBS_DOWN
                     # TEST: reactions
                     reactions = self.check_room_state(room_id=room_id, since=0, session_token=self.session_token)['reactions']
-                    for reaction in reactions:
-                        self.post_message(room_id=room_id, session_token=self.session_token, message='Got your message: \'{}\' at {}.'.format(reaction, self.get_time()))
+                    # for reaction in reactions:
+                    #     self.post_message(room_id=room_id, session_token=self.session_token, message='Got your message: \'{}\' at {}.'.format(reaction, self.get_time()))
 
                     for message in all_messages:
                         if message['authorAlias'] != self.chat_state[room_id]['my_alias']:
@@ -50,8 +54,12 @@ class DemoBot:
 
                                 ##### You should call your agent here and get the response message #####
 
-                                self.post_message(room_id=room_id, session_token=self.session_token, message='Got your message: \'{}\' at {}.'.format(message['message'], self.get_time()))
-            time.sleep(listen_freq)
+                                query = message['message']
+                                response = self.movie_agent.user_wish(query)
+                                self.post_message(room_id=room_id, session_token=self.session_token, message=response)
+
+                                ########################################################################
+
 
     def login(self, username: str, password: str):
         agent_details = requests.post(url=url + "/api/login", json={"username": username, "password": password}).json()
@@ -80,6 +88,6 @@ class DemoBot:
 
 if __name__ == '__main__':
     username = 'noah.mamie_bot'
-    password = getpass.getpass('Password of the demo bot:')
-    demobot = DemoBot(username, password)
-    demobot.listen()
+    password = getpass.getpass('Password of the movie bot >>> ')
+    moviebot = MovieBot(username, password)
+    moviebot.listen()

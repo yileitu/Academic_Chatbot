@@ -50,7 +50,9 @@ class IntentRecognizer:
 if __name__ == '__main__':
     # test intent recognition
     text = 'who is the director of'
+    text1 = 'what is the genre of'
+    text2 = 'who directed'
     intent = IntentRecognizer()
-    intent = intent.extract_intent(text)
+    intent = intent.extract_intent(text2)
     print(text)
     print(intent)

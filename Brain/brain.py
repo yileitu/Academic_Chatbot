@@ -11,6 +11,7 @@ class Brain:
         self.ent2lbl = ent2lbl
         self.pred, self.entities = self.ner(text)
         self.movie_intent = self.intent(text)
+        print("Brain initialized")
 
     # named entity recognition
     def ner(self, text: str) -> tuple:
