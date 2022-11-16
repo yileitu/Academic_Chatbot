@@ -74,6 +74,13 @@ def question_patterns() -> dict:
                                     "Who is the executive producer of X-Men: First Class?"]}
     return patterns
 
+def clean_text(text: str) -> str:
+        text = text.replace('?', '')
+        text = text.replace('!', '')
+        text = text.replace('.', '')
+        text = text.replace(',', '') # TODO: What to remove?
+        return text
+        
 if __name__ == '__main__':
     text = "I like movies that Al Pacino starred in"
     text1 = "I wonder what Al Pacino looks like"
