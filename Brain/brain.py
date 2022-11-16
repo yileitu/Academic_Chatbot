@@ -1,10 +1,11 @@
 from Levenshtein import distance as ldist
 
 # TODO: intelligence for chatbot
-from Brain. ner.entity_matcher import EntityMatcher
-from Brain.intent.intent_recognition import IntentRecognizer
+from Brain.ner.entity_matcher import EntityMatcher
 from Brain.ner.entity_recognizer import EntityRecognizer
-from Brain.utils import detect_casing, load_crf_model
+from Brain.intent.intent_recognition import IntentRecognizer
+from Brain.utils import detect_casing, intent_text, load_crf_model
+
 
 class Brain:
     # initialize brain class
@@ -21,12 +22,13 @@ class Brain:
         casing = detect_casing(text)
         crf = load_crf_model(casing)
         movie_ner = EntityRecognizer(crf)
-        pred, entities = movie_ner.extract_entities(text)
+        pos, pred, entities = movie_ner.extract_entities(text)
         print(entities)
-        return pred, entities
+        return pos, pred, entities
 
     # intent recognition
-    def intent(self, text: str) -> list:
+    def intent(self, text: str, pos: list, pred: list) -> str:
+        text = intent_text(text, pos, pred)
         recognizer = IntentRecognizer()
         movie_intent = recognizer.extract_intent(text)
         user_intent = ''
@@ -36,15 +38,18 @@ class Brain:
         for int in movie_intent:
             #for token in tokens:
             # match substring of intent with text
-            clean_int = int[0].split('/')[-1]
-            if ldist(self.rel2lbl[self.WDT[clean_int]], text) < min_dist: # TODO: 100% accurate matching
-                min_dist = ldist(self.rel2lbl[self.WDT[clean_int]], text)
-                user_intent = int[0]
+            if int != None:
+                clean_int = int[0].split('/')[-1]
+                if ldist(self.rel2lbl[self.WDT[clean_int]], text) < min_dist: # TODO: 100% accurate matching
+                    min_dist = ldist(self.rel2lbl[self.WDT[clean_int]], text)
+                    user_intent = int[0]
             # for ent in self.entities.keys():
             #     if ent.lower() in int[1].lower():
             #         user_intent = int[0]
         if user_intent == '':
-            user_intent = movie_intent[0][0]
+            if movie_intent[0] != None:
+                user_intent = movie_intent[0][0]
+            else: user_intent = "No intent found"
         return user_intent
 
     # TODO: complete different classes
@@ -73,6 +78,7 @@ class Brain:
         matcher = EntityMatcher(self.graph, self.ent2lbl)
         entity = matcher.match(entities)
         return entity
+
 
 if __name__ == '__main__':
     # test brain

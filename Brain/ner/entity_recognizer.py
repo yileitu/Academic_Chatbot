@@ -30,13 +30,14 @@ class EntityRecognizer:
         for i, t in enumerate(tokens):
             pred.append((t, y_pred[0][i]))
         entities = pred2entity(pred)
-        return pred, entities
+        return tagged, pred, entities
 
 if __name__ == '__main__':
     # test entity recognizer
     text = 'Who is the director of Top Gun: Maverick?'
     ner = EntityRecognizer()
-    pred, entities = ner.extract_entities(text)
+    pos, pred, entities = ner.extract_entities(text)
     print(text)
+    print(pos)
     print(pred)
     print(entities)
