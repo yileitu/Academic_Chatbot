@@ -1,4 +1,5 @@
 import pickle
+import random
 
 class ImageQuestion:
     def __init__(self, graph, ent2lbl, lbl2ent, rel2lbl, lbl2rel, WD, WDT):
@@ -12,7 +13,7 @@ class ImageQuestion:
         self.images = self.load_images()
         print('ImageQuestion initialized')
 
-    def image_finder(self, entities, relation): # TODO: how to use relation?
+    def image_finder(self, entities, relation): # TODO: how to use relation? Introduce time limit?
         """
         Find the corresponding image based on the JSON file
         """
@@ -85,19 +86,30 @@ class ImageQuestion:
         if len(actor_ids) == 0 and len(movie_ids) == 0:
             return None
 
+
         # find the image in the JSON file
+        # check if an image is there
+        image_url_vague = None
         for image in self.images:
+            if self.contains_list(actor_ids, image["cast"]) and self.contains_list(movie_ids, image["movie"]):
+                image_url_vague = image["img"].replace(".jpg", "")
+                break
+        if image_url_vague == None:
+            return None
+
+        # while loop to find a random image if there are multiple
+        image_url = None
+        while image_url == None:
+            image = random.choice(self.images)
+            # exact match image url
             if self.contains_list(actor_ids, image["cast"]) and len(image["cast"]) == len(actor_ids) and self.contains_list(movie_ids, image["movie"]):
                 image_url = image["img"].replace(".jpg", "")
-            elif self.contains_list(actor_ids, image["cast"]) and self.contains_list(movie_ids, image["movie"]):
-                image_url = image["img"].replace(".jpg", "")
-            else:
-                image_url = None
             # return the image url if not None
             if image_url != None:
                 return image_url
+        # else return the vague image url
+        return image_url_vague
 
-        return image_url
 
     def contains_list(self, list1, list2):
         """
