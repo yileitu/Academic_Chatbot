@@ -31,6 +31,7 @@ class KnowledgeGraph(object):
         self.ent2lbl = {ent: str(lbl) for ent, lbl in self.graph.subject_objects(self.RDFS.label)}
         self.lbl2ent = {lbl: ent for ent, lbl in self.ent2lbl.items()}
         self.rel2lbl = {rel: str(lbl) for rel, lbl in self.graph.subject_objects(self.RDFS.label)}
+        self.lbl2rel = {lbl: rel for rel, lbl in self.rel2lbl.items()}
         print('Knowledge graph, embeddings and dictionaries loaded')
 
     # get the knowledge graph   

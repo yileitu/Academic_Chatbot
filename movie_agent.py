@@ -12,7 +12,7 @@ class MovieAgent:
         self.ent2lbl = KG.ent2lbl
         self.lbl2ent = KG.lbl2ent
         self.rel2lbl = KG.rel2lbl
-        self.lbl2rel = {v: k for k, v in self.rel2lbl.items()}
+        self.lbl2rel = KG.lbl2rel
         self.ent2id = KG.ent2id
         self.id2ent =  KG.id2ent
         self.rel2id = KG.rel2id
@@ -24,7 +24,7 @@ class MovieAgent:
         self.SCHEMA = KG.SCHEMA
         self.entity_emb = KG.entity_emb
         self.relation_emb = KG.relation_emb
-        self.brain = Brain(self.graph, self.ent2lbl, self.rel2lbl, self.WDT)
+        self.brain = Brain(self.graph, self.ent2lbl, self.rel2lbl, self.WD, self.WDT)
         self.embedding_sim = EmbeddingSimilarity(self.entity_emb, self.relation_emb, 
             self.ent2lbl, self.lbl2ent, self.ent2id, self.id2ent, self.rel2id, self.WD, self.WDT)
         self.multimedia = ImageQuestion(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.lbl2rel, self.WD, self.WDT)
@@ -59,9 +59,9 @@ class MovieAgent:
         Returns the answer to a factual question
         """
         pos, pred, entities = self.brain.ner(text) # TODO: parse input text
+        match = self.brain.ent_matcher(entities)
         intent = self.brain.intent(text, pos, pred) # TODO: clean parsed text to identify intent more easily
         classification = self.brain.ent_classifier(entities)
-        match = self.brain.ent_matcher(entities)
         sparql = SPARQL(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.WDT, self.WD)
         answer = sparql.get_answer((pred, entities, intent, classification, match)) # TODO: answer formatter
         return answer
@@ -71,8 +71,10 @@ class MovieAgent:
         Returns the answer to an embedding question
         """
         pos, pred, entities = self.brain.ner(text)
-        intent = self.brain.intent(text, pos, pred)
-        answer = self.embedding_sim.most_similar(entities, intent, 3)
+        match = self.brain.ent_matcher(entities)
+        intent = self.brain.intent(text, pos, pred) # TODO: clean parsed text to identify intent more easily
+        classification = self.brain.ent_classifier(entities)
+        answer = self.embedding_sim.most_similar(match, intent, 3)
         return f"The {self.ent2lbl[self.WDT[intent.split('/')[-1]]]} of {list(entities.values())[0]} is {answer}."
 
     def image_query(self, text: str) -> str:
@@ -80,8 +82,10 @@ class MovieAgent:
         Returns the answer to an embedding question
         """
         pos, pred, entities = self.brain.ner(text)
-        intent = self.brain.intent(text, pos, pred)
-        answer = self.multimedia.image_finder(entities, intent)
+        match = self.brain.ent_matcher(entities)
+        intent = self.brain.intent(text, pos, pred) # TODO: clean parsed text to identify intent more easily
+        classification = self.brain.ent_classifier(entities)
+        answer = self.multimedia.image_finder(match, intent)
         return answer
 
 

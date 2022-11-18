@@ -9,11 +9,13 @@ from Brain.utils import detect_casing, intent_text, load_crf_model
 
 class Brain:
     # initialize brain class
-    def __init__(self, graph, ent2lbl, rel2lbl, WDT):
+    def __init__(self, graph, ent2lbl, rel2lbl, WD, WDT):
         self.graph = graph
         self.ent2lbl = ent2lbl
         self.rel2lbl = rel2lbl
+        self.WD = WD
         self.WDT = WDT
+        self.matcher = EntityMatcher(self.graph, self.ent2lbl, self.WD)
         print("Brain initialized")
 
     # named entity recognition
@@ -75,7 +77,7 @@ class Brain:
 
     # find entities in Knowledge Graph
     def ent_matcher(self, entities: dict) -> str:
-        matcher = EntityMatcher(self.graph, self.ent2lbl)
+        matcher = self.matcher
         entity = matcher.match(entities)
         return entity
 

@@ -12,7 +12,7 @@ class ImageQuestion:
         self.images = self.load_images()
         print('ImageQuestion initialized')
 
-    def image_finder(self, entities, relation):
+    def image_finder(self, entities, relation): # TODO: how to use relation?
         """
         Find the corresponding image based on the JSON file
         """
@@ -34,68 +34,79 @@ class ImageQuestion:
                     movies.append(self.lbl2ent[entities[ent]])
         
         print(actors)
-        print(movies)
+        print(movies)        
 
-        
+        # query the graph for the corresponding IMDB id
+        try:
+            image_url = self.query_graph(actors, movies, relation)
+        except:
+            # show error
+            print("Error: Problem with the query")
+            image_url = None
 
-        if len(actors) == 1 and len(movies) == 1:
-            actor_rdf = actors[0].split('/')[-1]
-            movie_rdf = movies[0].split('/')[-1]
-            # SPARQL query to find the actor's IMDB id
-            query_template = "SELECT DISTINCT ?x WHERE {{ <{}> <{}> ?x . }}".format(self.WD[actor_rdf], self.lbl2rel["IMDb ID"])
-            qres = self.graph.query(query_template)
-            actor_id = ""
-            for row in qres:
-                actor_id = str(row.x)
-            # SPARQL query to find the movies IMDB id
-            query_template = "SELECT DISTINCT ?x WHERE {{ <{}> <{}> ?x . }}".format(self.WD[movie_rdf], self.lbl2rel["IMDb ID"])
-            qres = self.graph.query(query_template)
-            movie_id = ""
-            for row in qres:
-                movie_id = str(row.x)
-
-            # find the image in the JSON file
-            for image in self.images:
-                if actor_id in image["cast"] and len(image["cast"]) == 1 and movie_id in image["movie"]:
-                    image_url = image["img"].replace(".jpg", "")
-                    return f"image:{image_url}"
-            return None
-
-        elif len(actors) == 1:
-            actor_rdf = actors[0].split('/')[-1]
-            # SPARQL query to find the actor's IMDB id
-            query_template = "SELECT DISTINCT ?x WHERE {{ <{}> <{}> ?x . }}".format(self.WD[actor_rdf], self.lbl2rel["IMDb ID"])
-            print(query_template)
-            qres = self.graph.query(query_template)
-            actor_id = ""
-            for row in qres:
-                actor_id = str(row.x)
-
-            # find the image in the JSON file
-            for image in self.images:
-                if actor_id in image["cast"] and len(image["cast"]) == 1:
-                    image_url = image["img"].replace(".jpg", "")
-                    return f"image:{image_url}"
-            return None
-        
-        elif len(movies) == 1:
-            movie_rdf = movies[0].split('/')[-1]
-            # SPARQL query to find the actor's IMDB id
-            query_template = "SELECT DISTINCT ?x WHERE {{ <{}> <{}> ?x . }}".format(self.WD[movie_rdf], self.lbl2rel["IMDb ID"])
-            qres = self.graph.query(query_template)
-            movie_id = ""
-            for row in qres:
-                movie_id = str(row.x)
-
-            # find the image in the JSON file
-            for image in self.images:
-                if movie_id in image["movie"]:
-                    image_url = image["img"].replace(".jpg", "")
-                    return f"image:{image_url}"
-            return None
-
+        # return the image url if not None
+        if image_url != None:
+            print("Image URL: {}".format(image_url))
+            return f"image:{image_url}"
         else:
-            return "Sorry, not implemented yet"
+            return "Image not found"
+
+    def query_graph(self, actors, movies, relation):
+        """
+        Query the graph for the find the corresponding IMDB id
+        and the image in the JSON file
+        """
+        # initialize arrays for the actors and movies
+        actor_rdfs = []
+        movie_rdfs = []
+        actor_ids = []
+        movie_ids = []
+        
+        # find actor and movie rdfs and ids
+        for actor in actors:
+            actor_rdfs.append(actor.split('/')[-1])
+        for actor_rdf in actor_rdfs:
+            query_template_actor = "SELECT DISTINCT ?x WHERE {{ <{}> <{}> ?x . }}".format(self.WD[actor_rdf], self.lbl2rel["IMDb ID"])
+            qres = self.graph.query(query_template_actor)
+            for row in qres:
+                actor_ids.append(str(row.x))
+        for movie in movies:
+            movie_rdfs.append(movie.split('/')[-1])
+        for movie_rdf in movie_rdfs:
+            query_template_movie = "SELECT DISTINCT ?x WHERE {{ <{}> <{}> ?x . }}".format(self.WD[movie_rdf], self.lbl2rel["IMDb ID"])
+            qres = self.graph.query(query_template_movie)
+            for row in qres:
+                movie_ids.append(str(row.x))
+
+        print(actor_ids)
+        print(movie_ids)
+
+        # catch if no actors or movies are found
+        if len(actor_ids) == 0 and len(movie_ids) == 0:
+            return None
+
+        # find the image in the JSON file
+        for image in self.images:
+            if self.contains_list(actor_ids, image["cast"]) and len(image["cast"]) == len(actor_ids) and self.contains_list(movie_ids, image["movie"]):
+                image_url = image["img"].replace(".jpg", "")
+            elif self.contains_list(actor_ids, image["cast"]) and self.contains_list(movie_ids, image["movie"]):
+                image_url = image["img"].replace(".jpg", "")
+            else:
+                image_url = None
+            # return the image url if not None
+            if image_url != None:
+                return image_url
+
+        return image_url
+
+    def contains_list(self, list1, list2):
+        """
+        Check if list1 is contained in list2
+        """
+        for item in list1:
+            if item not in list2:
+                return False
+        return True
 
     def load_images(self):
         with open("data/Multimedia/images.pickle", "rb") as f:

@@ -80,14 +80,14 @@ def pred2entity(pred):
    return entities
 
 # match entities to knowledge base
-def match_entities(ent, exact_match, ent2lbl, entities):
+def match_entities(key, ent, exact_match, ent2lbl, entities, WD):
     if ent in ent2lbl:
-        exact_match[ent] = ent2lbl[ent]
+        exact_match[key] = ent2lbl[WD[ent]]
     else:
         fuzzy_match = entities.loc[entities['EntityLabel'].str.lower().str.contains(ent.lower(), regex=False), 'Entity'].values
         print(f"Fuzzy match for {ent}: {fuzzy_match}")
         if len(fuzzy_match) > 0:
-            exact_match[ent] = fuzzy_match[0]
+            exact_match[key] = ent2lbl[WD[fuzzy_match[0]]]
         else:
             exact_match[ent] = 'unknown'
     return exact_match

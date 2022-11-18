@@ -35,8 +35,9 @@ class EntityRecognizer:
 if __name__ == '__main__':
     # test entity recognizer
     text = 'Who is the director of Top Gun: Maverick?'
+    text1 = 'what does daniel craig look like'
     ner = EntityRecognizer()
-    pos, pred, entities = ner.extract_entities(text)
+    pos, pred, entities = ner.extract_entities(text1)
     print(text)
     print(pos)
     print(pred)

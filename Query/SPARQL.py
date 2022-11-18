@@ -15,7 +15,7 @@ class SPARQL:
         try:
             pred, entities, intent, classification, match = result
             for val in match.values():
-                ent = val
+                ent = self.lbl2ent[val]
             print(ent)
             query_template = "SELECT DISTINCT ?x ?y WHERE {{ <{}> <{}> ?x . }}".format(self.WD[ent], intent)
             print("--- sparql query: {}".format(query_template))
