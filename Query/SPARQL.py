@@ -17,7 +17,7 @@ class SPARQL:
             for val in match.values():
                 ent = self.lbl2ent[val]
             print(ent)
-            query_template = "SELECT DISTINCT ?x ?y WHERE {{ <{}> <{}> ?x . }}".format(self.WD[ent], intent)
+            query_template = "SELECT DISTINCT ?x ?y WHERE {{ <{}> <{}> ?x . }}".format(ent, intent)
             print("--- sparql query: {}".format(query_template))
             qres = self.graph.query(query_template)
             answer = ""
@@ -27,7 +27,7 @@ class SPARQL:
             # parse intent to only keep the last part of the URI
             intent_uri = intent.split('/')[-1]
             # intent to wikidata property
-            answer_template = "Hi, the {} of {} is {}.".format(self.rel2lbl[self.WDT[intent_uri]], self.ent2lbl[self.WD[ent]], answer)
+            answer_template = "Hi, the {} of {} is {}.".format(self.rel2lbl[self.WDT[intent_uri]], self.ent2lbl[ent], answer)
             return "\n{}".format(answer_template)
         except:
             return "Sorry, I don't know the answer to that question."

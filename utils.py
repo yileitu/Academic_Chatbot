@@ -27,20 +27,20 @@ def question_similarity(text: str) -> str:
                 best_match = key
     return best_match
 
-def sentence_similarity1(text1: str, text2: str) -> float:
-    """
-    Returns the similarity between two sentences
-    """
-    sentence1 = [word.lower() for word in word_tokenize(text1)]
-    sentence2 = [word.lower() for word in word_tokenize(text2)]
-    all_words = list(set(sentence1 + sentence2))
-    vector1 = [0] * len(all_words)
-    vector2 = [0] * len(all_words)
-    for word in sentence1:
-        vector1[all_words.index(word)] += 1
-    for word in sentence2:
-        vector2[all_words.index(word)] += 1
-    return 1 - spatial.distance.cosine(vector1, vector2)    
+# def sentence_similarity1(text1: str, text2: str) -> float:
+#     """
+#     Returns the similarity between two sentences
+#     """
+#     sentence1 = [word.lower() for word in word_tokenize(text1)]
+#     sentence2 = [word.lower() for word in word_tokenize(text2)]
+#     all_words = list(set(sentence1 + sentence2))
+#     vector1 = [0] * len(all_words)
+#     vector2 = [0] * len(all_words)
+#     for word in sentence1:
+#         vector1[all_words.index(word)] += 1
+#     for word in sentence2:
+#         vector2[all_words.index(word)] += 1
+#     return 1 - spatial.distance.cosine(vector1, vector2)    
 
 def question_type(text: str) -> str:
     """
@@ -62,12 +62,12 @@ def embed_patterns():
     dirname = os.path.dirname(__file__)
     # save all_patterns as csv
     df = pd.DataFrame(all_patterns)
-    df.to_csv(os.path.join(dirname, 'all_patterns.csv'), index=False)
+    df.to_csv(os.path.join(dirname, 'patterns/all_patterns.csv'), index=False)
     # save pattern_emb as numpy array
-    np.save(os.path.join(dirname, 'pattern_embeds.npy'), pattern_emb)
+    np.save(os.path.join(dirname, 'patterns/pattern_embeds.npy'), pattern_emb)
     return all_patterns
 
-def question_patterns() -> dict:
+def question_patterns() -> dict: # TODO: extend with more patterns
     """
     Returns a dictionary of question patterns for all types of movie questions
     """
@@ -92,8 +92,8 @@ def question_patterns() -> dict:
 def clean_text(text: str) -> str:
         text = text.replace('?', '')
         text = text.replace('!', '')
-        text = text.replace('.', '')
-        text = text.replace(',', '') # TODO: What to remove?
+        text = text.replace('.', '') # TODO: What to remove?
+        #text = text.replace(',', '')
         return text
         
 if __name__ == '__main__':

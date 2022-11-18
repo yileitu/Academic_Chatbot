@@ -1,4 +1,11 @@
 # Utils for Named Entity Recognition
+import os
+import numpy as np
+from sentence_transformers import SentenceTransformer
+import pandas as pd
+from sklearn.metrics import pairwise_distances
+
+
 def collate(dataframe):
     agg_func = lambda s: [(w, p, t) for w, p, t in zip(s['words'].values.tolist(), s['pos'].values.tolist(), s['tags'].values.tolist())]
     grouped = dataframe.groupby('sentence_id').apply(agg_func)
@@ -81,13 +88,39 @@ def pred2entity(pred):
 
 # match entities to knowledge base
 def match_entities(key, ent, exact_match, ent2lbl, entities, WD):
+    # exact match with entity labels
     if ent in ent2lbl:
         exact_match[key] = ent2lbl[WD[ent]]
+    # match with entity embeddings
     else:
-        fuzzy_match = entities.loc[entities['EntityLabel'].str.lower().str.contains(ent.lower(), regex=False), 'Entity'].values
-        print(f"Fuzzy match for {ent}: {fuzzy_match}")
-        if len(fuzzy_match) > 0:
-            exact_match[key] = ent2lbl[WD[fuzzy_match[0]]]
-        else:
-            exact_match[ent] = 'unknown'
+        dirname = os.path.dirname(__file__)
+        label_emb = np.load(os.path.join(dirname, 'labels/entity_label_embeds.npy'))
+        model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+        ent_emb = model.encode([ent])
+        distances = pairwise_distances(ent_emb.reshape(1, -1), label_emb).reshape(-1)
+        most_likely = np.argsort(distances)
+        closest = most_likely[0]
+        df = pd.read_csv(os.path.join(dirname, 'labels/entities_labels.csv'))
+        # find closest match in entities
+        closest_match = df.iloc[closest]['EntityLabel']
+        print(f"Closest match for {ent} is {closest_match}")
+        # get qid of closest match
+        exact_match[key] = closest_match
+    # else:
+    #     fuzzy_match = entities.loc[entities['EntityLabel'].str.lower().str.contains(ent.lower(), regex=False), 'Entity'].values
+    #     print(f"Fuzzy match for {ent}: {fuzzy_match}")
+    #     if len(fuzzy_match) > 0:
+    #         exact_match[key] = ent2lbl[WD[fuzzy_match[0]]]
+    #     else:
+    #         exact_match[ent] = 'unknown'
     return exact_match
+
+def embed_labels():
+    model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    dirname = os.path.dirname(__file__)
+    df = pd.read_csv(os.path.join(dirname, 'labels/entities_labels.csv'))
+    labels = df['EntityLabel'].values
+    label_emb = model.encode(labels)
+    # save pattern_emb as numpy array
+    np.save(os.path.join(dirname, 'labels/entity_label_embeds.npy'), label_emb)
+    return labels

@@ -36,7 +36,7 @@ class MovieAgent:
         """
         text_clean = clean_text(text)
         patterns = question_patterns()
-        similarity = question_similarity(text, patterns)
+        similarity = question_similarity(text)
         if similarity == 'factual':
             return self.factual_query(text_clean)
         elif similarity == 'recommendation':
