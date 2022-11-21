@@ -14,19 +14,22 @@ class EmbeddingSimilarity:
         self.WD = WD
         self.WDT = WDT
 
-    def most_similar(self, subject, predicate, topn=10):
+    def most_similar(self, subject, predicate=None, topn=10):
         """
         Returns the closest entities to the tail found by TransE
         """
         # parsing inputs
         subject = self.lbl2ent[list(subject.values())[0]]
-        predicate = self.WDT[predicate.split('/')[-1]]
         # entity embedding
         head = self.entity_emb[self.ent2id[subject]]
         # relation embedding
-        rel = self.relation_emb[self.rel2id[predicate]]
-        # combine according to the TransE scoring function
-        tail = head + rel
+        if predicate is not None:
+            pred_uri = predicate.split('/')[-1]
+            rel = self.relation_emb[self.rel2id[self.WDT[str(pred_uri)]]]
+            # combine according to the TransE scoring function
+            tail = head + rel
+        else:
+            tail = head
 
         # compute distance to *any* entity
         distances = pairwise_distances(tail.reshape(1, -1), self.entity_emb).reshape(-1)
