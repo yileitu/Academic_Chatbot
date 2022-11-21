@@ -76,7 +76,7 @@ class Brain:
         return ent_class
 
     # find entities in Knowledge Graph
-    def ent_matcher(self, entities: dict) -> str:
+    def ent_matcher(self, entities: dict) -> dict:
         matcher = self.matcher
         entity = matcher.match(entities)
         return entity

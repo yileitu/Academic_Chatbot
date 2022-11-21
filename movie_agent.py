@@ -1,6 +1,7 @@
 from Brain.brain import Brain
 from Brain.question_types.embeddings import EmbeddingSimilarity
 from Brain.question_types.multimedia import ImageQuestion
+from Brain.question_types.recommender import MovieRecommender
 from Knowledge.graph import KnowledgeGraph
 from Query.SPARQL import SPARQL
 from utils import question_patterns, question_similarity, question_type, clean_text
@@ -28,6 +29,7 @@ class MovieAgent:
         self.embedding_sim = EmbeddingSimilarity(self.entity_emb, self.relation_emb, 
             self.ent2lbl, self.lbl2ent, self.ent2id, self.id2ent, self.rel2id, self.WD, self.WDT)
         self.multimedia = ImageQuestion(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.lbl2rel, self.WD, self.WDT)
+        self.recommender = MovieRecommender(self.ent2lbl, self.lbl2ent, self.rel2lbl, self.lbl2rel, self.WD, self.WDT)
         print('Movie agent initialized')
 
     def user_wish(self, text: str) -> str:
@@ -40,9 +42,7 @@ class MovieAgent:
         if similarity == 'factual':
             return self.factual_query(text_clean)
         elif similarity == 'recommendation':
-            # TODO: implement recommendation
-            return 'recommendation'
-            #return self.recommendation(text)
+            return self.movie_query(text_clean) # TODO: rating based?
         elif similarity == 'multimedia':
             return self.image_query(text_clean)
         elif similarity == 'crowdsourcing':
@@ -74,8 +74,8 @@ class MovieAgent:
         match = self.brain.ent_matcher(entities)
         intent = self.brain.intent(text, pos, pred) # TODO: clean parsed text to identify intent more easily
         classification = self.brain.ent_classifier(entities)
-        answer = self.embedding_sim.most_similar(match, intent, 3)
-        return f"The {self.ent2lbl[self.WDT[intent.split('/')[-1]]]} of {list(entities.values())[0]} is {answer}."
+        answer = self.embedding_sim.most_similar(match, intent, 3) # TODO: several matches?
+        return f"The {self.ent2lbl[self.WDT[intent.split('/')[-1]]]} of {list(entities.values())[0]} is most likely {answer[0]}, {answer[1]} or {answer[2]}."
 
     def image_query(self, text: str) -> str:
         """
@@ -88,6 +88,21 @@ class MovieAgent:
         answer = self.multimedia.image_finder(match, intent)
         return answer
 
+    def movie_query(self, text: str) -> str:
+        """
+        Returns the answer to recommendation question
+        """
+        pos, pred, entities = self.brain.ner(text)
+        match = self.brain.ent_matcher(entities)
+        for m in match.keys():
+            if m == 'title':
+                rec = self.recommender.recommend_movie(match[m])
+                if rec != 'Movie not in database':
+                    return rec
+                else:
+                    rec = self.embedding_sim.most_similar(match, topn=4) # option to fallback on embedding similarity
+                    return f"Similar movies to {match[m]} are {rec[1]}, {rec[2]} and {rec[3]}."
+        return "No movie found"
 
 if __name__ == '__main__':
     #ent = {'title': 'The Godfather', 'actor': 'Al Pacino'}
