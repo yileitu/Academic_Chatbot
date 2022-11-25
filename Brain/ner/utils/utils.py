@@ -87,7 +87,7 @@ def pred2entity(pred):
    return entities
 
 # match entities to knowledge base
-def match_entities(key, ent, exact_match, ent2lbl, entities, WD):
+def match_entities(key, ent, exact_match, ent2lbl, WD, actors, directors, characters, genres, movies):
     # exact match with entity labels
     if ent in ent2lbl:
         exact_match[key] = ent2lbl[WD[ent]]
@@ -104,6 +104,9 @@ def match_entities(key, ent, exact_match, ent2lbl, entities, WD):
         # find closest match in entities
         closest_match = df.iloc[closest]['EntityLabel']
         print(f"Closest match for {ent} is {closest_match}")
+        # check if entity types match
+        key = check_entity_types(key, closest_match, actors, directors, characters, genres, movies)
+        print(key)
         # get qid of closest match
         exact_match[key] = closest_match
     # else:
@@ -114,6 +117,41 @@ def match_entities(key, ent, exact_match, ent2lbl, entities, WD):
     #     else:
     #         exact_match[ent] = 'unknown'
     return exact_match
+
+def check_entity_types(key: str, closest_match: str, actors, directors, characters, genres, movies) -> str: # TODO: better engineering
+    """
+    Check if the entity types match with entity types in the graph
+    """
+    if key == 'actor':
+        if closest_match in actors['EntityLabel'].values:
+            return key 
+    elif key == 'director':
+        if closest_match in directors['EntityLabel'].values:
+            return key
+    elif key == 'character':
+        if closest_match in characters['EntityLabel'].values:
+            return key
+    elif key == 'genre':
+        if closest_match in genres['EntityLabel'].values:
+            return key
+    elif key == 'title':
+        if closest_match in movies['EntityLabel'].values:
+            return key
+    
+    # key is wrong, get correct key by checking for closest match
+    if closest_match in actors['EntityLabel'].values:
+        return 'actor'
+    elif closest_match in directors['EntityLabel'].values:
+        return 'director'
+    elif closest_match in characters['EntityLabel'].values:
+        return 'character'
+    elif closest_match in genres['EntityLabel'].values:
+        return 'genre'
+    elif closest_match in movies['EntityLabel'].values:
+        return 'title'
+    else:
+        return 'unknown'
+
 
 def embed_labels():
     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')

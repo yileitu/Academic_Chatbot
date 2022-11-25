@@ -1,4 +1,5 @@
 from Brain.brain import Brain
+from Brain.question_types.crowdsourcing import CrowdSource
 from Brain.question_types.embeddings import EmbeddingSimilarity
 from Brain.question_types.multimedia import ImageQuestion
 from Brain.question_types.recommender import MovieRecommender
@@ -30,6 +31,7 @@ class MovieAgent:
             self.ent2lbl, self.lbl2ent, self.ent2id, self.id2ent, self.rel2id, self.WD, self.WDT)
         self.multimedia = ImageQuestion(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.lbl2rel, self.WD, self.WDT)
         self.recommender = MovieRecommender(self.ent2lbl, self.lbl2ent, self.rel2lbl, self.lbl2rel, self.WD, self.WDT)
+        self.crowdsourcing = CrowdSource(self.ent2lbl, self.lbl2ent, self.rel2lbl, self.lbl2rel)
         print('Movie agent initialized')
 
     def user_wish(self, text: str) -> str:
@@ -39,16 +41,15 @@ class MovieAgent:
         text_clean = clean_text(text)
         patterns = question_patterns()
         similarity = question_similarity(text)
-        if similarity == 'factual':
+        if similarity == 'factual' or similarity == 'crowdsourcing':
             return self.factual_query(text_clean)
         elif similarity == 'recommendation':
             return self.movie_query(text_clean) # TODO: rating based?
         elif similarity == 'multimedia':
+            print("That's a tough one, let me think...") # TODO: implement submission to user
             return self.image_query(text_clean)
-        elif similarity == 'crowdsourcing':
-            #TODO: implement crowdsourcing
-            return 'crowdsourcing'
-            #return self.crowdsourcing(text)
+        # elif similarity == 'crowdsourcing':
+        #     return 'crowdsourcing'
         elif similarity == 'embedding':
             return self.embedding_query(text_clean)
         else:
@@ -61,7 +62,10 @@ class MovieAgent:
         pos, pred, entities = self.brain.ner(text) # TODO: parse input text
         match = self.brain.ent_matcher(entities)
         intent = self.brain.intent(text, pos, pred) # TODO: clean parsed text to identify intent more easily
-        classification = self.brain.ent_classifier(entities)
+        crowd = self.crowdsourcing.ask_crowd(match, intent)
+        if crowd != ('None', 'None', 'None'):
+            return f"With an inter-rate agreement of {crowd[0]} and a support of {int(crowd[1])} out of 3 votes, the answer is {crowd[2]}."
+        classification = self.brain.ent_classifier(entities) # TODO: is ent_classifier necessary?
         sparql = SPARQL(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.WDT, self.WD)
         answer = sparql.get_answer((pred, entities, intent, classification, match)) # TODO: answer formatter
         return answer
@@ -98,7 +102,7 @@ class MovieAgent:
             if m == 'title':
                 rec = self.recommender.recommend_movie(match[m])
                 if rec != 'Movie not in database':
-                    return rec
+                    return f"Similar movies to {match[m]} are {rec[1]}, {rec[2]} and {rec[3]}."
                 else:
                     rec = self.embedding_sim.most_similar(match, topn=4) # option to fallback on embedding similarity
                     return f"Similar movies to {match[m]} are {rec[1]}, {rec[2]} and {rec[3]}."
@@ -114,4 +118,7 @@ if __name__ == '__main__':
     input_text = ""
     while input_text != "exit":
         input_text = input('Enter your question: ')
-        print(movie_agent.user_wish(input_text))
+        try:
+            print(movie_agent.user_wish(input_text))
+        except Exception as e:
+            print(f"Error: {e}")

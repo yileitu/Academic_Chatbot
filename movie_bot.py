@@ -54,10 +54,13 @@ class MovieBot:
 
                                 ##### You should call your agent here and get the response message #####
 
-                                query = message['message']
-                                response = self.movie_agent.user_wish(query)
-                                self.post_message(room_id=room_id, session_token=self.session_token, message=response)
-
+                                try:
+                                    query = message['message'] # TODO: encoding utf-8? (currently latin-1)
+                                    response = self.movie_agent.user_wish(query)
+                                    self.post_message(room_id=room_id, session_token=self.session_token, message=response)
+                                except Exception as e:
+                                    print('Error: {}'.format(e)) # TODO: better exceptions
+                                
                                 ########################################################################
 
 
@@ -74,7 +77,7 @@ class MovieBot:
 
     def post_message(self, room_id: str, session_token: str, message: str):
         tmp_des = requests.post(url=url + "/api/room/{}".format(room_id),
-                                params={"roomId": room_id, "session": session_token}, data=message).json()
+                                params={"roomId": room_id, "session": session_token}, data=message.encode('utf-8')).json()
         if tmp_des['description'] != 'Message received':
             print('\t\t Error: failed to post message: {}'.format(message))
 
