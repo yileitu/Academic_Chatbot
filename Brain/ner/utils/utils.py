@@ -122,33 +122,33 @@ def check_entity_types(key: str, closest_match: str, actors, directors, characte
     """
     Check if the entity types match with entity types in the graph
     """
-    if key == 'actor':
+    if key == 'title':
+        if closest_match in movies['EntityLabel'].values:
+            return key
+    elif key == 'actor':
         if closest_match in actors['EntityLabel'].values:
             return key 
     elif key == 'director':
         if closest_match in directors['EntityLabel'].values:
             return key
-    elif key == 'character':
-        if closest_match in characters['EntityLabel'].values:
-            return key
     elif key == 'genre':
         if closest_match in genres['EntityLabel'].values:
             return key
-    elif key == 'title':
-        if closest_match in movies['EntityLabel'].values:
+    elif key == 'character':
+        if closest_match in characters['EntityLabel'].values:
             return key
     
     # key is wrong, get correct key by checking for closest match
-    if closest_match in actors['EntityLabel'].values:
+    if closest_match in movies['EntityLabel'].values:
+        return 'title'
+    elif closest_match in actors['EntityLabel'].values:
         return 'actor'
     elif closest_match in directors['EntityLabel'].values:
         return 'director'
-    elif closest_match in characters['EntityLabel'].values:
-        return 'character'
     elif closest_match in genres['EntityLabel'].values:
         return 'genre'
-    elif closest_match in movies['EntityLabel'].values:
-        return 'title'
+    elif closest_match in characters['EntityLabel'].values:
+        return 'character'
     else:
         return 'unknown'
 

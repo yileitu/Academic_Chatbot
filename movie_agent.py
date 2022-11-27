@@ -62,12 +62,18 @@ class MovieAgent:
         pos, pred, entities = self.brain.ner(text) # TODO: parse input text
         match = self.brain.ent_matcher(entities)
         intent = self.brain.intent(text, pos, pred) # TODO: clean parsed text to identify intent more easily
-        crowd = self.crowdsourcing.ask_crowd(match, intent)
-        if crowd != ('None', 'None', 'None'):
-            return f"With an inter-rate agreement of {crowd[0]} and a support of {int(crowd[1])} out of 3 votes, the answer is {crowd[2]}."
         classification = self.brain.ent_classifier(entities) # TODO: is ent_classifier necessary?
         sparql = SPARQL(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.WDT, self.WD)
-        answer = sparql.get_answer((pred, entities, intent, classification, match)) # TODO: answer formatter
+        crowd = self.crowdsourcing.ask_crowd(match, intent)
+        if crowd != ('None', 'None', 'None'):
+            #return f"With an inter-rate agreement of {crowd[0]} and a support of {int(crowd[1])} out of 3 votes, the answer is {crowd[2]}."
+            answer = sparql.get_crowd_answer((pred, entities, intent, classification, match, crowd)) # TODO: answer formatter
+            if answer == 'None':
+                return "The crowd that answered this question unfortunately did not agree on an answer. Do you want me to try to find an answer on my own?"
+            return answer
+        answer = sparql.get_factual_answer((pred, entities, intent, classification, match)) # TODO: answer formatter
+        if answer == 'None':
+            return "Can you please rephrase this question? I don't know the answer."
         return answer
 
     def embedding_query(self, text: str) -> str:
@@ -79,11 +85,11 @@ class MovieAgent:
         intent = self.brain.intent(text, pos, pred) # TODO: clean parsed text to identify intent more easily
         classification = self.brain.ent_classifier(entities)
         answer = self.embedding_sim.most_similar(match, intent, 3) # TODO: several matches?
-        return f"The {self.ent2lbl[self.WDT[intent.split('/')[-1]]]} of {list(entities.values())[0]} is most likely {answer[0]}, {answer[1]} or {answer[2]}."
+        return f"The {self.ent2lbl[self.WDT[intent.split('/')[-1]]]} of {match.keys()[0]} is most likely {answer[0]}, {answer[1]} or {answer[2]}."
 
     def image_query(self, text: str) -> str:
         """
-        Returns the answer to an embedding question
+        Returns the answer to an image question
         """
         pos, pred, entities = self.brain.ner(text)
         match = self.brain.ent_matcher(entities)
@@ -94,7 +100,7 @@ class MovieAgent:
 
     def movie_query(self, text: str) -> str:
         """
-        Returns the answer to recommendation question
+        Returns the answer to a recommendation question
         """
         pos, pred, entities = self.brain.ner(text)
         match = self.brain.ent_matcher(entities)
@@ -102,10 +108,19 @@ class MovieAgent:
             if m == 'title':
                 rec = self.recommender.recommend_movie(match[m])
                 if rec != 'Movie not in database':
-                    return f"Similar movies to {match[m]} are {rec[1]}, {rec[2]} and {rec[3]}."
+                    rec_unique = []
+                    for r in rec:
+                        if r != match[m] and r not in rec_unique:
+                            rec_unique.append(r)
+                    return f"I would recommend you to watch {rec_unique[0]}, {rec_unique[1]} and {rec_unique[2]}, given that you like {match[m]}."
                 else:
-                    rec = self.embedding_sim.most_similar(match, topn=4) # option to fallback on embedding similarity
-                    return f"Similar movies to {match[m]} are {rec[1]}, {rec[2]} and {rec[3]}."
+                    rec = self.embedding_sim.most_similar(match, topn=10) # option to fallback on embedding similarity
+                    # remove movies from rec that are equal to match[m] and those that are not unique
+                    rec_unique = []
+                    for r in rec:
+                        if r != match[m] and r not in rec_unique:
+                            rec_unique.append(r)
+                    return f"Similar movies to {match[m]} are {rec_unique[0]}, {rec_unique[1]} and {rec_unique[2]}."
         return "No movie found"
 
 if __name__ == '__main__':

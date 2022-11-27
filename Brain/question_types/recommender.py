@@ -25,7 +25,7 @@ class MovieRecommender:
         movie = self.lbl2ent[movie]
         if movie in self.plots['qid'].values:
             # get the recommendations
-            rec = self.get_recommendations(movie)
+            rec = self.get_recommendations(movie) # TODO: rating-based filtering
 
             # get labels of the recommendations
             # split uri from entity
