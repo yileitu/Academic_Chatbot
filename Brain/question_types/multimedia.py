@@ -102,7 +102,7 @@ class ImageQuestion:
         while image_url == None:
             image = random.choice(self.images)
             # exact match image url
-            if self.contains_list(actor_ids, image["cast"]) and len(image["cast"]) == len(actor_ids) and self.contains_list(movie_ids, image["movie"]):
+            if self.contains_list(actor_ids, image["cast"]) and len(image["cast"]) == len(actor_ids) and self.contains_list(movie_ids, image["movie"]): # TODO: poster or still?
                 image_url = image["img"].replace(".jpg", "")
             # return the image url if not None
             if image_url != None:
