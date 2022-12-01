@@ -41,8 +41,8 @@ class MovieAgent:
         text_clean = clean_text(text)
         patterns = question_patterns()
         similarity = question_similarity(text)
-        if similarity == 'factual' or similarity == 'crowdsourcing':
-            return self.factual_query(text_clean)
+        if similarity == 'factual' or similarity == 'crowdsourcing' or similarity == 'embedding':
+            return self.factual_query(text)
         elif similarity == 'recommendation':
             return self.movie_query(text_clean) # TODO: rating based?
         elif similarity == 'multimedia':
@@ -50,8 +50,8 @@ class MovieAgent:
             return self.image_query(text_clean)
         # elif similarity == 'crowdsourcing':
         #     return 'crowdsourcing'
-        elif similarity == 'embedding':
-            return self.embedding_query(text_clean)
+        # elif similarity == 'embedding':
+        #     return self.embedding_query(text_clean)
         else:
             return "unknown"
 
@@ -65,16 +65,26 @@ class MovieAgent:
         classification = self.brain.ent_classifier(entities) # TODO: is ent_classifier necessary?
         sparql = SPARQL(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.WDT, self.WD)
         crowd = self.crowdsourcing.ask_crowd(match, intent)
+        emb_answer = self.embedding_sim.most_similar(match, intent, 3) # TODO: several matches?
         if crowd != ('None', 'None', 'None'):
             #return f"With an inter-rate agreement of {crowd[0]} and a support of {int(crowd[1])} out of 3 votes, the answer is {crowd[2]}."
             answer = sparql.get_crowd_answer((pred, entities, intent, classification, match, crowd)) # TODO: answer formatter
             if answer == 'None':
-                return "The crowd that answered this question unfortunately did not agree on an answer. Do you want me to try to find an answer on my own?"
+                if emb_answer[0] == 'Not found':
+                    return "Sorry, I have no clue..."        
+                return f"The {self.ent2lbl[self.WDT[intent.split('/')[-1]]]} of {list(match.values())[0]} is most likely {emb_answer[0]}, {emb_answer[1]} or {emb_answer[2]}."
+                #return "The crowd that answered this question unfortunately did not agree on an answer. Do you want me to try to find an answer on my own?"
             return answer
         answer = sparql.get_factual_answer((pred, entities, intent, classification, match)) # TODO: answer formatter
         if answer == 'None':
-            return "Can you please rephrase this question? I don't know the answer."
-        return answer
+            return f"The {self.ent2lbl[self.WDT[intent.split('/')[-1]]]} of {list(match.values())[0]} is most likely {emb_answer[0]}, {emb_answer[1]} or {emb_answer[2]}."
+            #return "Can you please rephrase this question? I don't know the answer."
+        for e in emb_answer:
+            if e == 'Not found':
+                return answer
+            elif e != answer:
+                emb_answer[0] = e
+        return answer + " " + "However, I feel that " + emb_answer[0] + " might also be a correct answer."
 
     def embedding_query(self, text: str) -> str:
         """
@@ -104,6 +114,10 @@ class MovieAgent:
         """
         pos, pred, entities = self.brain.ner(text)
         match = self.brain.ent_matcher(entities)
+        # user_sur = str(input("Would you like to be surprised (y/n)? ")).strip()
+        # if user_sur == 'y':
+        #     surprise = True # TODO: based on user interaction, active learning?
+        # else: surprise = False
         for m in match.keys():
             if m == 'title':
                 rec = self.recommender.recommend_movie(match[m])

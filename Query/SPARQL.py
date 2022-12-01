@@ -14,6 +14,7 @@ class SPARQL:
         """
         try:
             pred, entities, intent, classification, match = result
+            ent = ''
             for val in match.values():
                 ent = self.lbl2ent[val]
             print(ent)
@@ -45,6 +46,8 @@ class SPARQL:
         """
         try:
             pred, entities, intent, classification, match, crowd = result
+            ent = ''
+            print(match)
             for val in match.values():
                 ent = self.lbl2ent[val]
             print(ent)

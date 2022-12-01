@@ -11,7 +11,7 @@ class MovieRecommender:
         self.lbl2rel = lbl2rel
         self.WD = WD
         self.WDT = WDT
-        self.plots = pd.read_csv('data/recommender/plots.csv')
+        self.plots = pd.read_csv('data/recommender/plots_expanded.csv')
         self.cosine_sim = pickle.load(open('data/recommender/cosine_sim.pickle', 'rb'))
         self.indices = pickle.load(open('data/recommender/indices.pickle', 'rb')) 
         print('MovieRecommender initialized')
@@ -60,15 +60,19 @@ class MovieRecommender:
         # get the movie indices
         movie_indices = [i[0] for i in sim_scores]
 
-        # return the top 10 most similar movies
-        return self.plots['qid'].iloc[movie_indices]
+        # return the top 10 most similar movies sorted by imdb rating
+        sim_movies = self.plots['qid'].iloc[movie_indices]
+
+        # sort the movies based on the imdb rating from file
+        sim_movies_rated = sorted(sim_movies, key=lambda x: self.plots[self.plots['qid'] == x]['IMDb Rating'].values[0], reverse=True) # TODO: enable/disable rating-based filtering (surprise)?
+        return sim_movies_rated # TODO: return top 10 similar movies and the movie that is best rated (inkl. rating and nr voters)
 
 if __name__ == '__main__':
     recommender = MovieRecommender(None, None, None, None, None, None)
     # go to directory where the data is stored
     import os
     os.chdir('data/recommender')
-    recommender.plots = pd.read_csv('plots.csv')
+    recommender.plots = pd.read_csv('plots_expanded.csv')
     recommender.cosine_sim = pickle.load(open('cosine_sim.pickle', 'rb'))
     recommender.indices = pickle.load(open('indices.pickle', 'rb'))
-    print(recommender.get_recommendations('http://www.wikidata.org/entity/Q15270932'))
+    print(recommender.get_recommendations('http://www.wikidata.org/entity/Q179673', False))

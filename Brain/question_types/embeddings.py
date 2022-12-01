@@ -25,7 +25,10 @@ class EmbeddingSimilarity:
         # relation embedding
         if predicate is not None:
             pred_uri = predicate.split('/')[-1]
-            rel = self.relation_emb[self.rel2id[self.WDT[str(pred_uri)]]]
+            try:
+                rel = self.relation_emb[self.rel2id[self.WDT[str(pred_uri)]]]
+            except:
+                return ['Not found']
             # combine according to the TransE scoring function
             tail = head + rel
         else:
