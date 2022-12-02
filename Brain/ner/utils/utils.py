@@ -87,10 +87,14 @@ def pred2entity(pred):
    return entities
 
 # match entities to knowledge base
-def match_entities(key, ent, exact_match, ent2lbl, WD, actors, directors, characters, genres, movies):
+def match_entities(lst: bool, key, ent, exact_match, ent2lbl, WD, actors, directors, characters, genres, movies):
     # exact match with entity labels
     if ent in ent2lbl:
-        exact_match[key] = ent2lbl[WD[ent]]
+        if lst == True:
+            if key not in exact_match.keys():
+                exact_match[key] = []
+            exact_match[key].append(ent2lbl[WD[ent]])
+        else: exact_match[key] = ent2lbl[WD[ent]]
     # match with entity embeddings
     else:
         dirname = os.path.dirname(__file__)
@@ -108,7 +112,11 @@ def match_entities(key, ent, exact_match, ent2lbl, WD, actors, directors, charac
         key = check_entity_types(key, closest_match, actors, directors, characters, genres, movies)
         print(key)
         # get qid of closest match
-        exact_match[key] = closest_match
+        if lst == True:
+            if key not in exact_match.keys():
+                exact_match[key] = []
+            exact_match[key].append(closest_match)
+        else: exact_match[key] = closest_match
     # else:
     #     fuzzy_match = entities.loc[entities['EntityLabel'].str.lower().str.contains(ent.lower(), regex=False), 'Entity'].values
     #     print(f"Fuzzy match for {ent}: {fuzzy_match}")
