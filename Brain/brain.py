@@ -28,6 +28,12 @@ class Brain:
         print(entities)
         return pos, pred, entities
 
+    def recommender_ner(self, text: str) -> dict:
+        rec_ner = EntityRecognizer()
+        entities = rec_ner.extract_recommender_entities(text)
+        print(entities)
+        return entities
+
     # intent recognition
     def intent(self, text: str, pos: list, pred: list) -> str:
         int_text = intent_text(text, pos, pred)

@@ -22,7 +22,7 @@ class EntityMatcher:
         for key, ent in entities.items():
             if type(ent) == list:
                 for e in ent:
-                    exact_match = match_entities(key, e, exact_match, self.ent2lbl, self.WD, self.actors, self.directors, self.characters, self.genres, self.movies)
+                    exact_match = match_entities(True, key, e, exact_match, self.ent2lbl, self.WD, self.actors, self.directors, self.characters, self.genres, self.movies)
             else:
-                exact_match = match_entities(key, ent, exact_match, self.ent2lbl, self.WD, self.actors, self.directors, self.characters, self.genres, self.movies)
+                exact_match = match_entities(False, key, ent, exact_match, self.ent2lbl, self.WD, self.actors, self.directors, self.characters, self.genres, self.movies)
         return exact_match

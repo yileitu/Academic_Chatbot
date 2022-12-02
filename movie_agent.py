@@ -112,29 +112,31 @@ class MovieAgent:
         """
         Returns the answer to a recommendation question
         """
-        pos, pred, entities = self.brain.ner(text)
+        entities = self.brain.recommender_ner(text)
         match = self.brain.ent_matcher(entities)
         # user_sur = str(input("Would you like to be surprised (y/n)? ")).strip()
         # if user_sur == 'y':
         #     surprise = True # TODO: based on user interaction, active learning?
         # else: surprise = False
-        for m in match.keys():
-            if m == 'title':
-                rec = self.recommender.recommend_movie(match[m])
-                if rec != 'Movie not in database':
-                    rec_unique = []
-                    for r in rec:
-                        if r != match[m] and r not in rec_unique:
-                            rec_unique.append(r)
-                    return f"I would recommend you to watch {rec_unique[0]}, {rec_unique[1]} and {rec_unique[2]}, given that you like {match[m]}."
-                else:
-                    rec = self.embedding_sim.most_similar(match, topn=10) # option to fallback on embedding similarity
-                    # remove movies from rec that are equal to match[m] and those that are not unique
-                    rec_unique = []
-                    for r in rec:
-                        if r != match[m] and r not in rec_unique:
-                            rec_unique.append(r)
-                    return f"Similar movies to {match[m]} are {rec_unique[0]}, {rec_unique[1]} and {rec_unique[2]}."
+        if len(match['title']) > 0:
+            rec = self.recommender.recommend_movie(match)
+            if rec != 'Movie not in database':
+                rec_unique = []
+                for r in rec:
+                    if r['title'] not in match['title'] and r['title'] not in rec_unique:
+                        rec_unique.append(r)
+                # movie with highest rating
+                rec_rating = sorted(rec_unique, key=lambda k: k['rating'], reverse=True)
+                return f"Similar movies are {rec_unique[0]['title']}, {rec_unique[1]['title']} and {rec_unique[2]['title']}. " \
+                    f"Based on the ratings of {int(rec_rating[0]['nr_voters'])} IMDb users I would recommend you to watch {rec_rating[0]['title']} with an overall rating of {rec_rating[0]['rating']}."
+            else:
+                rec = self.embedding_sim.most_similar_recommendation(match['title'], topn=10) # option to fallback on embedding similarity
+                # remove movies from rec that are equal to match[m] and those that are not unique
+                rec_unique = []
+                for r in rec:
+                    if r not in match['title'] and r not in rec_unique:
+                        rec_unique.append(r)
+                return f"Similar movies are {rec_unique[0]}, {rec_unique[1]} and {rec_unique[2]}."
         return "No movie found"
 
 if __name__ == '__main__':

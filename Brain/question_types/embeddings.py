@@ -49,3 +49,42 @@ class EmbeddingSimilarity:
 
         # return the topn most plausible entities
         return label
+
+
+    def most_similar_recommendation(self, rec_movies, topn=10):
+        """
+        Returns the closest entities to the tail found by TransE
+        """
+        # parsing inputs
+        distances = None
+        for movie in rec_movies:
+            print(movie)
+            movie = self.lbl2ent[movie]
+            # entity embeddings
+            head = self.entity_emb[self.ent2id[movie]]
+            print(head)
+
+            # compute distance to *any* entity
+            if distances is None:
+                distances = pairwise_distances(head.reshape(1, -1), self.entity_emb).reshape(-1)
+                print(distances)
+            else: distances += pairwise_distances(head.reshape(1, -1), self.entity_emb).reshape(-1)
+
+        # average distances
+        distances = distances / len(rec_movies)
+        print(distances)
+        
+        # find most plausible tails
+        most_likely = np.argsort(distances)
+
+        # convert idx to ent
+        label = []
+        for idx in most_likely[:topn]:
+            ent = self.id2ent[idx]
+            lbl = self.ent2lbl[ent]
+            label.append(lbl)
+
+        print(label)
+
+        # return the topn most plausible entities
+        return label
