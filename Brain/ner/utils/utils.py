@@ -90,6 +90,8 @@ def pred2entity(pred):
 def match_entities(lst: bool, key, ent, exact_match, ent2lbl, WD, actors, directors, characters, genres, movies):
     # exact match with entity labels
     if ent in ent2lbl:
+        key = check_entity_types(key, ent, actors, directors, characters, genres, movies)
+        print(key)
         if lst == True:
             if key not in exact_match.keys():
                 exact_match[key] = []
@@ -117,13 +119,6 @@ def match_entities(lst: bool, key, ent, exact_match, ent2lbl, WD, actors, direct
                 exact_match[key] = []
             exact_match[key].append(closest_match)
         else: exact_match[key] = closest_match
-    # else:
-    #     fuzzy_match = entities.loc[entities['EntityLabel'].str.lower().str.contains(ent.lower(), regex=False), 'Entity'].values
-    #     print(f"Fuzzy match for {ent}: {fuzzy_match}")
-    #     if len(fuzzy_match) > 0:
-    #         exact_match[key] = ent2lbl[WD[fuzzy_match[0]]]
-    #     else:
-    #         exact_match[ent] = 'unknown'
     return exact_match
 
 def check_entity_types(key: str, closest_match: str, actors, directors, characters, genres, movies) -> str: # TODO: better engineering

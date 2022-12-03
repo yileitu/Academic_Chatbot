@@ -31,14 +31,13 @@ class SPARQL:
                     answer = str(row.x)
             # if no answer is found, try to find a similar answer from embeddings
             if answer == "":
-                return 'None'
+                return 'unknown'
             # parse intent to only keep the last part of the URI
             intent_uri = intent.split('/')[-1]
             # intent to wikidata property
-            answer_template = f"Hi, the {self.rel2lbl[self.WDT[intent_uri]]} of {self.ent2lbl[ent]} is {answer}."
-            return "\n{}".format(answer_template)
+            return self.rel2lbl[self.WDT[intent_uri]], self.ent2lbl[ent], answer
         except:
-            return "Sorry, I don't know the answer to that question."
+            return "unknown"
         
     def get_crowd_answer(self, result: tuple):
         """
@@ -64,9 +63,8 @@ class SPARQL:
                     answer = str(row.x)
             # if no answer is found, try to find a similar answer from embeddings
             if answer == "":
-                return 'None'
+                return "unknown"
             # intent to wikidata property
-            answer_template = f"According to the crowd, with an inter-rate agreement of {crowd[0]} and a support of {int(crowd[1])} out of 3 votes, the answer is {answer}."
-            return "\n{}".format(answer_template)
+            return crowd[0], int(crowd[1]), answer
         except:
-            return "Sorry, I don't know the answer to that question."
+            return "unknown"

@@ -50,7 +50,7 @@ class ImageQuestion:
             print("Image URL: {}".format(image_url))
             return f"image:{image_url}"
         else:
-            return "Image not found"
+            return "not found"
 
     def query_graph(self, actors, movies, relation):
         """
