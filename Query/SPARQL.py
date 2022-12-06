@@ -21,16 +21,16 @@ class SPARQL:
             query_template = "SELECT DISTINCT ?x ?y WHERE {{ <{}> <{}> ?x . }}".format(ent, intent)
             print("--- sparql query: {}".format(query_template))
             qres = self.graph.query(query_template)
-            answer = ""
+            answer = []
             for row in qres:
                 if row.x in self.ent2lbl.keys():
                     print(self.ent2lbl[row.x])
-                    answer = self.ent2lbl[row.x]
+                    answer.append(self.ent2lbl[row.x])
                 else:
                     print(str(row.x))
-                    answer = str(row.x)
+                    answer.append(str(row.x))
             # if no answer is found, try to find a similar answer from embeddings
-            if answer == "":
+            if answer == []:
                 return 'unknown'
             # parse intent to only keep the last part of the URI
             intent_uri = intent.split('/')[-1]
@@ -53,16 +53,16 @@ class SPARQL:
             query_template = "SELECT DISTINCT ?x ?y WHERE {{ <{}> <{}> ?x . }}".format(ent, intent)
             print("--- sparql query: {}".format(query_template))
             qres = self.graph.query(query_template)
-            answer = ""
+            answer = []
             for row in qres:
                 if row.x in self.ent2lbl.keys():
                     print(self.ent2lbl[row.x])
-                    answer = self.ent2lbl[row.x]
+                    answer.append(self.ent2lbl[row.x])
                 else:
                     print(str(row.x))
-                    answer = str(row.x)
+                    answer.append(str(row.x))
             # if no answer is found, try to find a similar answer from embeddings
-            if answer == "":
+            if answer == []:
                 return "unknown"
             # intent to wikidata property
             return crowd[0], int(crowd[1]), answer

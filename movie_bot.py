@@ -3,8 +3,11 @@ import atexit
 import getpass
 import requests  # install the package via "pip install requests"
 from collections import defaultdict
+import threading
+import queue
 
 from movie_agent import MovieAgent
+from Response.response import natural_response_msg_history, natural_response_unknown
 
 # url of the speakeasy server
 url = 'https://speakeasy.ifi.uzh.ch'
@@ -18,10 +21,12 @@ class MovieBot:
         self.agent_details = self.login(username, password)
         self.session_token = self.agent_details['sessionToken']
         self.chat_state = defaultdict(lambda: {'messages': defaultdict(dict), 'initiated': False, 'my_alias': None})
+        self.history = []
+        self.reactions = {}
 
         atexit.register(self.logout)
 
-    def listen(self):
+    def movie_chat(self):
         while True:
             # check for all chatrooms
             current_rooms = self.check_rooms(session_token=self.session_token)['rooms']
@@ -31,7 +36,7 @@ class MovieBot:
                     room_id = room['uid']
                     if not self.chat_state[room_id]['initiated']:
                         # send a welcome message and get the alias of the agent in the chatroom
-                        self.post_message(room_id=room_id, session_token=self.session_token, message='Hi, I am a movie bot. Ask me about movies!')
+                        self.post_message(room_id=room_id, session_token=self.session_token, message='Hi, I am a movie bot. Ask me about movies! Also I love feedback, so be sure to react to my messages (thumbs up, thumbs down, star) \U0001F600')
                         self.chat_state[room_id]['initiated'] = True
                         self.chat_state[room_id]['my_alias'] = room['alias']
 
@@ -39,8 +44,27 @@ class MovieBot:
                     all_messages = self.check_room_state(room_id=room_id, since=0, session_token=self.session_token)['messages']
 
                     # you can also use ["reactions"] to get the reactions of the messages: STAR, THUMBS_UP, THUMBS_DOWN
-                    # TEST: reactions
-                    reactions = self.check_room_state(room_id=room_id, since=0, session_token=self.session_token)['reactions']
+                    new_reacts = self.check_room_state(room_id=room_id, since=0, session_token=self.session_token)['reactions']
+                    # check whether there are new reactions
+                    if room_id not in self.reactions.keys():
+                        self.reactions[room_id] = []
+                    if new_reacts != self.reactions[room_id]:
+                        # check for all reactions
+                        for react in new_reacts:
+                            # check whether the reaction is new
+                            if react not in self.reactions[room_id]:
+                                # check whether the reaction is a thumbs up
+                                if react['type'] == 'THUMBS_UP':
+                                    self.post_message(room_id=room_id, session_token=self.session_token, message='Thanks for the feedback! \U0001F600\n Do you want additional information?')
+                                # check whether the reaction is a thumbs down
+                                elif react['type'] == 'THUMBS_DOWN':
+                                    self.post_message(room_id=room_id, session_token=self.session_token, message='Thanks for the feedback! Since you seem to be an expert, could you tell me what was wrong with my answer? \U0001F600')
+                                # check whether the reaction is a star
+                                elif react['type'] == 'STAR':
+                                    self.post_message(room_id=room_id, session_token=self.session_token, message='Thanks for the feedback! Wanna know more? \U0001F600')
+                        self.reactions[room_id] = new_reacts
+
+                    #[{'messageOrdinal': 0, 'type': 'THUMBS_DOWN'}]
                     # for reaction in reactions:
                     #     self.post_message(room_id=room_id, session_token=self.session_token, message='Got your message: \'{}\' at {}.'.format(reaction, self.get_time()))
 
@@ -52,14 +76,38 @@ class MovieBot:
                                 self.chat_state[room_id]['messages'][message['ordinal']] = message
                                 print('\t- Chatroom {} - new message #{}: \'{}\' - {}'.format(room_id, message['ordinal'], message['message'], self.get_time()))
 
-                                ##### You should call your agent here and get the response message #####
+                                ##### Call agent here and get the response message #####
 
                                 try:
-                                    query = message['message'] # TODO: encoding utf-8? (currently latin-1)
-                                    response = self.movie_agent.user_wish(query)
+                                    time_before = time.localtime()
+                                    query = message['message']
+                                    # print apology if it takes longer than 2 seconds to get a response
+                                    time_diff = time.mktime(time.localtime()) - time.mktime(time_before)
+                                    print(time_diff)
+                                    if time_diff > 1.5:
+                                        self.post_message(room_id=room_id, session_token=self.session_token, message='That\'s a tough one, let me think...')
+                                    response, match, intent = self.multi_thread(query)
+                                    # check if question was already asked and get answer from history
+                                    multi = ""
+                                    response = response[0].upper() + response[1:]
+                                    if match is not None and intent is not None:
+                                        if (match, intent, room_id, self.session_token) in self.history:
+                                            multi = natural_response_msg_history()
+                                            response = multi + response
+                                        else: 
+                                            self.history.append((match, intent, room_id, self.session_token))
                                     self.post_message(room_id=room_id, session_token=self.session_token, message=response)
                                 except Exception as e:
+                                    self.post_message(room_id=room_id, session_token=self.session_token, message=natural_response_unknown())
                                     print('Error: {}'.format(e)) # TODO: better exceptions
+                                                           
+                else:
+                    # delete the history of the chatroom
+                    for msg in self.history:
+                        if msg[2] == room['uid']:
+                            self.history.remove(msg)
+            # wait for 1 second to avoid spamming the server
+            time.sleep(1)
                                 
                                 ########################################################################
 
@@ -88,9 +136,31 @@ class MovieBot:
         if requests.get(url=url + "/api/logout", params={"session": self.session_token}).json()['description'] == 'Logged out':
             print('- Session \'{}\' successfully logged out!'.format(self.session_token))
 
+    def answer(self, query, queue):
+        """Get the answer from the agent and put it into the queue."""
+        print(f"New thread: {query}")
+        response = self.movie_agent.user_wish(query)
+        queue.put(response)
+        print(f"Thread finished: {query}")
+
+    def multi_thread(self, text):
+        """This function is used to run the movie_chat function in a separate thread."""
+        q = queue.Queue()
+        try:
+            t = threading.Thread(target=self.answer, args=(text, q))
+            t.start()
+            t.join()
+            response = q.get()
+            return response
+        except Exception as e:
+            print("Error:", e)
+            return natural_response_unknown()
+
 
 if __name__ == '__main__':
     username = 'noah.mamie_bot'
-    password = getpass.getpass('Password of the movie bot >>> ')
+    #password = getpass.getpass('Password of the movie bot >>> ')
+    pwd_file = open('Credentials/pass.txt', 'r')
+    password = pwd_file.read().replace('\n', '')
     moviebot = MovieBot(username, password)
-    moviebot.listen()
+    moviebot.movie_chat()

@@ -1,3 +1,5 @@
+import time
+
 from Brain.brain import Brain
 from Brain.question_types.crowdsourcing import CrowdSource
 from Brain.question_types.embeddings import EmbeddingSimilarity
@@ -40,25 +42,27 @@ class MovieAgent:
         Returns the answer to the user input
         """
         text_clean = clean_text(text)
-        patterns = question_patterns()
-        similarity = question_similarity(text)
+        similarity = question_similarity(text_clean)
         if similarity == 'factual':
-            return self.factual_query(text)
+            time.sleep(1)
+            response = self.factual_query(text_clean)
         elif similarity == 'recommendation':
-            return self.movie_query(text_clean)
+            response = self.movie_query(text_clean)
         elif similarity == 'multimedia':
-            print("That's a tough one, let me think...") # TODO: implement submission to user
-            return self.image_query(text_clean)
+            time.sleep(1)
+            response = self.image_query(text_clean)
         else:
-            return natural_response_unknown()
+            time.sleep(1)
+            response = natural_response_unknown()
+        return response
 
-    def factual_query(self, text: str) -> str:
+    def factual_query(self, text: str) -> tuple: # TODO: answer for cast members (and others?) should output a list of entities!!!
         """
         Returns the answer to a factual question
         """
         pos, pred, entities = self.brain.ner(text) # TODO: parse input text
         if entities == {}:
-            return natural_response_unknown()
+            return natural_response_unknown(), None, None
         match = self.brain.ent_matcher(entities)
         intent = self.brain.intent(text, pos, pred) # TODO: clean parsed text to identify intent more easily
         classification = self.brain.ent_classifier(entities) # TODO: is ent_classifier necessary?
@@ -69,50 +73,48 @@ class MovieAgent:
             if e in match.values():
                 emb_answer.remove(e)
         if crowd != ('None', 'None', 'None'):
-            answer = sparql.get_crowd_answer((pred, entities, intent, classification, match, crowd)) # TODO: answer formatter
+            answer = sparql.get_crowd_answer((pred, entities, intent, classification, match, crowd))
             if answer == 'unknown':
                 if emb_answer[0] == 'Not found':
-                    return natural_response_negative()
-                return natural_response_embedding_several((self.ent2lbl[self.WDT[intent.split('/')[-1]]], list(match.values())[0], emb_answer[0], emb_answer[1], emb_answer[2]))
-            return natural_response_crowd(answer)
-        answer = sparql.get_factual_answer((pred, entities, intent, classification, match)) # TODO: answer formatter
+                    return natural_response_negative(), match, intent
+                return natural_response_embedding_several((self.ent2lbl[self.WDT[intent.split('/')[-1]]], list(match.values())[0], emb_answer[0], emb_answer[1], emb_answer[2])), match, intent
+            if str(intent.split('/')[-1]) != 'P161':
+                answer = answer[0], answer[1], answer[2][-1]
+            return natural_response_crowd(answer), match, intent
+        answer = sparql.get_factual_answer((pred, entities, intent, classification, match))
         if answer == 'unknown':
-            return natural_response_embedding_several((self.ent2lbl[self.WDT[intent.split('/')[-1]]], list(match.values())[0], emb_answer[0], emb_answer[1], emb_answer[2]))
+            return natural_response_embedding_several((self.ent2lbl[self.WDT[intent.split('/')[-1]]], list(match.values())[0], emb_answer[0], emb_answer[1], emb_answer[2])), match, intent
+        if str(intent.split('/')[-1]) != 'P161':
+                answer = answer[0], answer[1], answer[2][-1]
         for e in emb_answer:
-            if e == 'Not found':
-                return natural_response_factual(answer)
-            elif e == answer[2]:
-                emb_answer.remove(e)
-        return natural_response_factual(answer) + " " + "However, " + natural_response_embedding_one(emb_answer[0])
+            if e == 'Not found' or e == answer[2] or e in answer[2]:
+                return natural_response_factual(answer), match, intent
+        return natural_response_factual(answer) + " " + "However, " + natural_response_embedding_one(emb_answer[0]), match, intent
 
-    def image_query(self, text: str) -> str:
+    def image_query(self, text: str) -> tuple:
         """
         Returns the answer to an image question
         """
         pos, pred, entities = self.brain.ner(text)
         if entities == {}:
-            return natural_response_unknown()
+            return natural_response_unknown(), None, None
         match = self.brain.ent_matcher(entities)
         intent = self.brain.intent(text, pos, pred) # TODO: clean parsed text to identify intent more easily
         classification = self.brain.ent_classifier(entities)
         answer = self.multimedia.image_finder(match, intent)
         if answer != "not found":
-            return answer
+            return answer, match, intent
         else:
-            return natural_response_no_picture()
+            return natural_response_no_picture(), match, intent
 
-    def movie_query(self, text: str) -> str:
+    def movie_query(self, text: str) -> tuple:
         """
         Returns the answer to a recommendation question
         """
         entities = self.brain.recommender_ner(text)
         if entities == {}:
-            return natural_response_unknown()
+            return natural_response_unknown(), None, None
         match = self.brain.ent_matcher(entities)
-        # user_sur = str(input("Would you like to be surprised (y/n)? ")).strip()
-        # if user_sur == 'y':
-        #     surprise = True # TODO: based on user interaction, active learning?
-        # else: surprise = False
         if 'title' in match.keys():
             rec = self.recommender.recommend_movie(match)
             if rec != 'Movie not in database':
@@ -122,7 +124,7 @@ class MovieAgent:
                         rec_unique.append(r)
                 # movie with highest rating
                 rec_rating = sorted(rec_unique, key=lambda k: k['rating'], reverse=True)
-                return natural_response_recommender((rec_unique[0]['title'], rec_unique[1]['title'], rec_unique[2]['title'], int(rec_rating[0]['nr_voters']), rec_rating[0]['title'], rec_rating[0]['rating']))
+                return natural_response_recommender((rec_unique[0]['title'], rec_unique[1]['title'], rec_unique[2]['title'], int(rec_rating[0]['nr_voters']), rec_rating[0]['title'], rec_rating[0]['rating'])), match, 'recommendation'
             else:
                 rec = self.embedding_sim.most_similar_recommendation(match['title'], topn=10) # option to fallback on embedding similarity
                 # remove movies from rec that are in match and those that are not unique
@@ -130,8 +132,8 @@ class MovieAgent:
                 for r in rec:
                     if r not in match['title'] and r not in rec_unique:
                         rec_unique.append(r)
-                return natural_response_embedding_recommender((rec_unique[0], rec_unique[1], rec_unique[2]))
-        return natural_response_unknown()
+                return natural_response_embedding_recommender((rec_unique[0], rec_unique[1], rec_unique[2])), match, 'recommendation'
+        return natural_response_unknown(), None, None
 
 if __name__ == '__main__':
     #ent = {'title': 'The Godfather', 'actor': 'Al Pacino'}

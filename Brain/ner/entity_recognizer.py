@@ -75,11 +75,12 @@ if __name__ == '__main__':
     text2 = 'Recommend movies similar to Hamlet and Othello.'
     text3 = 'Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies?'
     text4 = 'Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween.'
+    text5 = 'what is the country of citizenship of Cho Geun-hyeon'
     ner = EntityRecognizer()
     # pos, pred, entities = ner.extract_entities(text1)
     # print(text)
     # print(pos)
     # print(pred)
     # print(entities)
-    entities = ner.extract_recommender_entities(text4)
+    entities = ner.extract_recommender_entities(text5)
     print(entities)

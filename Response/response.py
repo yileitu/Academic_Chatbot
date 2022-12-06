@@ -4,28 +4,55 @@ import random
 def natural_response_factual(results):
     """Returns a natural language string response to a factual question."""
     # several options for natural language responses
-    responses = [
-        f"The {results[0]} of {results[1]} is {results[2]}.",
-        f"The answer is {results[2]}.",
-        f"{results[2]} is the {results[0]} of {results[1]}.",
-        f"{results[2]} is the answer.",
-        f"{results[2]} is the correct answer.",
-        f"{results[2]} is the right answer.",
-        f"That would be {results[2]}."   
-    ]
+    if type(results[2]) == list:
+        # format list elements to string with commas
+        conc = ", ".join([str(member) for member in results[2][:-1]]) + " and " + str(results[2][-1])
+        results = results[0], results[1], conc
+        responses = [
+            f"The cast members of {results[1]} are {results[2]}.",
+            f"The cast members are {results[2]}.",
+            f"{results[2]} are the cast members of {results[1]}.",
+            f"{results[2]} are the cast members.",
+            f"{results[2]} is the correct answer.",
+            f"{results[2]} is the right answer.",
+            f"That would be {results[2]}."  
+        ]
+    else:
+        responses = [
+            f"The {results[0]} of {results[1]} is {results[2]}.",
+            f"The answer is {results[2]}.",
+            f"{results[2]} is the {results[0]} of {results[1]}.",
+            f"{results[2]} is the answer.",
+            f"{results[2]} is the correct answer.",
+            f"{results[2]} is the right answer.",
+            f"That would be {results[2]}."   
+        ]
     return random.choice(responses)
 
 def natural_response_crowd(results):
     """Returns a natural language string response to a crowd question."""
     # several options for natural language responses
-    responses = [
-        f"With an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes, the answer is {results[2]}.",
-        f"The answer is {results[2]} with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes.",
-        f"{results[2]} is the answer with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes.",
+    if type(results[2]) == list:
+        # format list elements to string with commas
+        conc = ", ".join([str(member) for member in results[2][:-1]]) + " and " + str(results[2][-1])
+        results = results[0], results[1], conc
+        responses = [
+        f"With an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes, the cast members are {results[2]}.",
+        f"The cast members are {results[2]} with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes.",
+        f"{results[2]} are the cast members, with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes.",
         f"{results[2]} is the correct answer with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes.",
-        f"The crowd, with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes, thinks the answer is {results[2]}.",
-        f"It is {results[2]}, according to the crowd with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes."
+        f"The crowd, with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes, thinks the cast members are {results[2]}.",
+        f"The cast members are {results[2]}, according to the crowd with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes."
     ]
+    else:
+        responses = [
+            f"With an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes, the answer is {results[2]}.",
+            f"The answer is {results[2]} with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes.",
+            f"{results[2]} is the answer, with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes.",
+            f"{results[2]} is the correct answer with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes.",
+            f"The crowd, with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes, thinks the answer is {results[2]}.",
+            f"It is {results[2]}, according to the crowd with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes."
+        ]
     return random.choice(responses)
 
 def natural_response_embedding_one(results):
@@ -129,6 +156,18 @@ def natural_response_no_picture():
     ]
     return random.choice(responses)
 
+def natural_response_msg_history():
+    """Returns a natural language string response to 
+    a question that is in the message history of the chatbot."""
+    # several options for natural language responses
+    responses = [
+        "Well, you already asked me that \U0001F609\n",
+        "I already told you that \U0001F609\n",
+        "Sure, I'll gladly remind you again \U0001F609\n",
+        "No worries, I'm happy to remind you again \U0001F609\n",
+        "I have all the time in the world to tell you again \U0001F609\n"
+    ]
+    return random.choice(responses)
 
 if __name__ == "__main__":
     print(natural_response_factual(("nationality", "Brad Pitt", "American")))
@@ -140,3 +179,4 @@ if __name__ == "__main__":
     print(natural_response_negative())
     print(natural_response_unknown())
     print(natural_response_no_picture())
+    print(natural_response_msg_history())

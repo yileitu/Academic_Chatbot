@@ -115,6 +115,8 @@ if __name__ == '__main__':
     text2 = "What is the IMDB film rating for Top Gun: Maverick?"
     text3 = "What is the filming location of Avatar?"
     text4 = "Who is the father of Tom Hanks?"
+    text5 = "what is the country of citizenship of Cho Geun-hyeon?"
+    print(clean_text(text5))
     #embed_patterns()
-    sim = question_similarity(text4)
-    print(sim)
+    # sim = question_similarity(text4)
+    # print(sim)

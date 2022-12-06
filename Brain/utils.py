@@ -28,11 +28,12 @@ def intent_text(text: str, pos: list, ner_pred: list) -> str:
             text = text.replace(tag[0], "")   
     text = text.lower()
     text = " ".join(text.split())
+    print(text)
     return text
 
 if __name__ == '__main__':
-    text = "What is the genre of the movie The Godfather?"
-    pos = [('What', 'WP'), ('is', 'VBZ'), ('the', 'DT'), ('genre', 'NN'), ('of', 'IN'), ('the', 'DT'), ('movie', 'NN'), ('The', 'DT'), ('Godfather', 'NNP'), ('?', '.')]
-    pred = [('What', 'O'), ('is', 'O'), ('the', 'O'), ('genre', 'O'), ('of', 'O'), ('the', 'O'), ('movie', 'O'), ('The', 'B-TITLE'), ('Godfather', 'I-TITLE'), ('?', 'O')]
+    text = "what is the country of citizenship of Cho Geun-hyeon?"
+    pos = [('what', 'WP'), ('is', 'VBZ'), ('the', 'DT'), ('country', 'NN'), ('of', 'IN'), ('citizenship', 'NN'), ('of', 'IN'), ('Cho', 'NNP'), ('Geun-hyeon', 'NNP'), ('?', '.')]
+    pred = [('what', 'O'), ('is', 'O'), ('the', 'O'), ('country', 'O'), ('of', 'O'), ('citizenship', 'O'), ('of', 'O'), ('Cho', 'B-PER'), ('Geun-hyeon', 'I-PER'), ('?', 'O')]
     int = intent_text(text, pos, pred)
     print(int)

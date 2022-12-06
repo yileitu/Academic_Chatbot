@@ -58,6 +58,7 @@ if __name__ == '__main__':
     text3 = 'What is the MPAA film rating of'
     text4 = 'Who is the executive producer of'
     text5 = "is director of"
+    text6 = "is country of citizenship of"
     intent = IntentRecognizer()
-    intent = intent.extract_intent(text4)
+    intent = intent.extract_intent(text6)
     print(intent)
