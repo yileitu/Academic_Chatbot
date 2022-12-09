@@ -3,6 +3,7 @@ import os
 
 from nltk import word_tokenize, pos_tag
 from Brain.ner.utils.utils import pred2entity, sent2features
+#from utils.utils import pred2entity, sent2features
 from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
 
 class EntityRecognizer:
@@ -38,35 +39,39 @@ class EntityRecognizer:
         return tagged, pred, entities
 
     def extract_recommender_entities(self, text: str) -> dict:
-        # NER pipeline
-        ner = self.pipe(text)
-        # concatenate the tokens to entities
-        entities = {}
-        entities['title'] = []
-        entities['actor'] = []
-        for i in range(len(ner)):
-            if ner[i]['entity'] == 'B-MISC' or ner[i]['entity'] == 'I-MISC':
-                # concatenate words with hashtags at the beginning
-                if ner[i]['word'][0] == '#':
-                    entities['title'][-1] = entities['title'][-1] + (ner[i]['word']).replace('#', '')
-                else: 
-                    if ner[i]['entity'] != 'B-MISC':
-                        if ner[i - 1]['entity'] == 'B-MISC' or ner[i - 1]['entity'] == 'I-MISC':
-                            entities['title'][-1] = entities['title'][-1] + ' ' + ner[i]['word']
-                    else: entities['title'].append(ner[i]['word'])
-            else:
-                if ner[i]['entity'] == 'B-PER' or ner[i]['entity'] == 'I-PER':
+        try:
+            # NER pipeline
+            ner = self.pipe(text)
+            # concatenate the tokens to entitiesBrain.ner.
+            entities = {}
+            entities['title'] = []
+            entities['actor'] = []
+            for i in range(len(ner)):
+                if ner[i]['entity'] == 'B-MISC' or ner[i]['entity'] == 'I-MISC':
                     # concatenate words with hashtags at the beginning
                     if ner[i]['word'][0] == '#':
-                        entities['actor'][-1] = entities['actor'][-1] + (ner[i]['word']).replace('#', '')
-                    else:
-                        if ner[i]['entity'] != 'B-PER':
-                            if ner[i - 1]['entity'] == 'B-PER' or ner[i - 1]['entity'] == 'I-PER':
-                                entities['actor'][-1] = entities['actor'][-1] + ' ' + ner[i]['word']
-                        else: entities['actor'].append(ner[i]['word'])
+                        entities['title'][-1] = entities['title'][-1] + (ner[i]['word']).replace('#', '')
+                    else: 
+                        if ner[i]['entity'] != 'B-MISC':
+                            if ner[i - 1]['entity'] == 'B-MISC' or ner[i - 1]['entity'] == 'I-MISC':
+                                entities['title'][-1] = entities['title'][-1] + ' ' + ner[i]['word']
+                        else: entities['title'].append(ner[i]['word'])
                 else:
-                    continue
-        return entities
+                    if ner[i]['entity'] == 'B-PER' or ner[i]['entity'] == 'I-PER':
+                        # concatenate words with hashtags at the beginning
+                        if ner[i]['word'][0] == '#':
+                            entities['actor'][-1] = entities['actor'][-1] + (ner[i]['word']).replace('#', '')
+                        else:
+                            if ner[i]['entity'] != 'B-PER':
+                                if ner[i - 1]['entity'] == 'B-PER' or ner[i - 1]['entity'] == 'I-PER':
+                                    entities['actor'][-1] = entities['actor'][-1] + ' ' + ner[i]['word']
+                            else: entities['actor'].append(ner[i]['word'])
+                    else:
+                        continue
+            return entities
+        except Exception as e:
+            print(e)
+            return {}
 
 if __name__ == '__main__':
     # test entity recognizer
@@ -76,11 +81,12 @@ if __name__ == '__main__':
     text3 = 'Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies?'
     text4 = 'Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween.'
     text5 = 'what is the country of citizenship of Cho Geun-hyeon'
+    text6 = 'what should I watch if I liked The Avengers: Endgame, The Dark Knight, and The Lord of the Rings: The Return of the King?'
     ner = EntityRecognizer()
     # pos, pred, entities = ner.extract_entities(text1)
     # print(text)
     # print(pos)
     # print(pred)
     # print(entities)
-    entities = ner.extract_recommender_entities(text5)
+    entities = ner.extract_recommender_entities(text6)
     print(entities)

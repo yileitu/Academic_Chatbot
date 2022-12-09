@@ -67,13 +67,14 @@ class ImageQuestion:
                     for idx, movie in enumerate(movie_ids[:-1]):
                         movie_string += self.ent2lbl[movies[idx]] + f" (imdb:{movie})" + ", "
                     movie_string = movie_string[:-2] + " and " + self.ent2lbl[movies[-1]] + f" (imdb:{movie_ids[-1]})"
+            multimedia_string = "<ATAI Bot: Multimedia>\n\n"
             if actor_string != "" and movie_string != "":
-                return f"Look, I found an image of {actor_string} in {movie_string}.\n\n image:{image_url}"
+                return multimedia_string + f"Look, I found an image of {actor_string} in {movie_string}.\n\n image:{image_url}"
             elif actor_string != "":
-                return f"Nice, I found a great shot of {actor_string}.\n\n image:{image_url}"
+                return multimedia_string + f"Nice, I found a great shot of {actor_string}.\n\n image:{image_url}"
             elif movie_string != "":
-                return f"Well, I found this image of {movie_string}.\n\n image:{image_url}"
-            return f"Great, I found the image you were seeking.\n\n image:{image_url}"
+                return multimedia_string + f"Well, I found this image of {movie_string}.\n\n image:{image_url}"
+            return multimedia_string + f"Great, I found the image you were seeking.\n\n image:{image_url}"
         else:
             return "not found"
 
