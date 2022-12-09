@@ -13,19 +13,42 @@ def question_similarity(text: str) -> str:
     sentence = model.encode(text)
     pattern_emb = np.load('patterns/pattern_embeds.npy')
     # find the closest question pattern
+    # calculate the min distance to each key of the dictionary
     distances = pairwise_distances(sentence.reshape(1, -1), pattern_emb).reshape(-1)
-    most_likely = np.argsort(distances)
-    closest = most_likely[0]
+    min_distance_idx = np.argmin(distances)
     df = pd.read_csv('patterns/all_patterns.csv')
-    closest_pattern = df.iloc[closest, 0]
+    closest_pattern = df.iloc[min_distance_idx, 0]
     # get the question type
     patterns = question_patterns()
+    # find the key with the lowest distance
     best_match = 'No question type found'
     for key, value in patterns.items():
         for pattern in value:
             if pattern == closest_pattern:
                 best_match = key
     return best_match
+
+# def question_similarity(text: str) -> str:
+#     """
+#     Returns the question type of the user input based on similarity to patterns
+#     """
+#     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+#     sentence = model.encode(text)
+#     pattern_emb = np.load('patterns/pattern_embeds.npy')
+#     # find the closest question pattern
+#     distances = pairwise_distances(sentence.reshape(1, -1), pattern_emb).reshape(-1)
+#     most_likely = np.argsort(distances)
+#     closest = most_likely[0]
+#     df = pd.read_csv('patterns/all_patterns.csv')
+#     closest_pattern = df.iloc[closest, 0]
+#     # get the question type
+#     patterns = question_patterns()
+#     best_match = 'No question type found'
+#     for key, value in patterns.items():
+#         for pattern in value:
+#             if pattern == closest_pattern:
+#                 best_match = key
+#     return best_match
 
 # def sentence_similarity1(text1: str, text2: str) -> float:
 #     """
@@ -71,35 +94,46 @@ def question_patterns() -> dict: # TODO: extend with more patterns
     """
     Returns a dictionary of question patterns for all types of movie questions
     """
-    patterns = {"factual": ["Who is the director of Some Movie?", 
-                            "Who directed The Bridge on the Some Other Movie?", 
-                            "Who is the director of Another Movie?",
-                            "What is the box office of A Movie?",
-                            "Can you tell me the publication date of Some Movie?",
-                            "Who is the executive producer of Some Movie?",
-                            "Who is the screenwriter of Some Movie?",
-                            "What is the MPAA film rating of Some Movie?",
-                            "What is the genre of Some Movie?",
-                            "Who is the father of A Guy?",
-                            "Who is the mother of Some Actor?",
-                            "Who is the spouse of Guy?",
-                            "What is the birth date of cool Guy?"],
-                "recommendation": ["Hi, given that I like movies that Some Guy starred in, what movies would you recommend?",
-                                    "Recommend movies similar to This Movie and That Movie.",
-                                    "Given that I like The Movie1, The Movie2 and The Movie3, can you recommend some movies?",
-                                    "Recommend movies like The Movie1, The Movie2 and The Movie3.",
-                                    "Recommend movies similar to The Movie1, The Movie2 and The Movie3.",
+    patterns = {"factual": ["Who is the director of X?", 
+                            "Who performed in XY?", 
+                            "What is the box office of X?",
+                            "Can you tell me the publication date of XY?",
+                            "Who is the executive producer of X?",
+                            "Who is the screenwriter of XY?",
+                            "What is the MPAA film rating of XY?",
+                            "What is the genre of X?",
+                            "Who is the father of Z?",
+                            "Who is the mother of Z?",
+                            "Who is the spouse of Z?",
+                            "What is the birth date of Z?"],
+                "check": ["Is this true that X directed Y?",
+                            "Is it true that X performed in Y?",
+                            "Do you agree that X is the box office of Y?",
+                            "Is it correct that X is the publication date of Y?",
+                            "Would you agree that X is the executive producer of Y?",
+                            "X is the screenwriter of Y, right?",
+                            "Y is the MPAA film rating of X, right?",
+                            "Is This Guy the director of This Movie?"
+                            "Is it true that X is the genre of Y?",
+                            "I think that the father of Y is X.",
+                            "I'm quite sure that the publication date of Y is X."
+                ],
+                "recommendation": ["Hi, given that I like movies that A starred in, what movies would you recommend?",
+                                    "Recommend movies similar to A and B.",
+                                    "Given that I like The A, The B and The C, can you recommend some movies?",
+                                    "Recommend movies like The A, The B and The C.",
+                                    "Recommend movies similar to The A, The B and The C.",
                                     "What should I watch if I like Some Movie?",
-                                    "I really like watching This Mpvie, what else should I watch?",
-                                    "What should I watch if I like A Movie?",
-                                    "Give me some movie recommendations similar to this Movie."],
-                "multimedia": ["Show me a picture of A Woman.",
-                                "What does A Man look like?",
-                                "Let me know what Another Woman looks like.",
-                                "Picture of Another Man.",
-                                "Show me a picture of A third Man.",
-                                "Show me a picture of A third Woman.",
-                                "I wonder what a cool Actor looks like."]}
+                                    "I really like watching This A, what else should I watch?",
+                                    "What should I watch if I like A A?",
+                                    "Give me some movie recommendations similar to B."],
+                "multimedia": ["Show me a picture of X.",
+                                "What does Y look like?",
+                                "Let me know what XY looks like.",
+                                "Picture of YZ.",
+                                "Show me a picture of Z.",
+                                "Show me a picture of ZA.",
+                                "I wonder what a A looks like."]}
     return patterns
 
 def clean_text(text: str) -> str:

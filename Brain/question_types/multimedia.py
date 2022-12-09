@@ -10,10 +10,11 @@ class ImageQuestion:
         self.lbl2rel = lbl2rel
         self.WD = WD
         self.WDT = WDT
-        self.images = self.load_images()
+        self.actors = self.load_actor_dict()
+        self.movies = self.load_movie_dict()
         print('ImageQuestion initialized')
 
-    def image_finder(self, entities, relation): # TODO: how to use relation? Introduce time limit?
+    def image_finder(self, entities):
         """
         Find the corresponding image based on the JSON file
         """
@@ -30,7 +31,7 @@ class ImageQuestion:
             elif ent == "title":
                 if type(entities[ent]) == list:
                     for m in entities[ent]:
-                        actors.append(self.lbl2ent[m])
+                        movies.append(self.lbl2ent[m])
                 else:
                     movies.append(self.lbl2ent[entities[ent]])
         
@@ -39,7 +40,7 @@ class ImageQuestion:
 
         # query the graph for the corresponding IMDB id
         try:
-            image_url = self.query_graph(actors, movies, relation)
+            image_url, actor_ids, movie_ids = self.query_graph(actors, movies)
         except:
             # show error
             print("Error: Problem with the query")
@@ -48,11 +49,35 @@ class ImageQuestion:
         # return the image url if not None
         if image_url != None:
             print("Image URL: {}".format(image_url))
-            return f"image:{image_url}"
+            # build string with all actors      
+            actor_string = ""
+            if len(actor_ids) > 0:
+                if len(actor_ids) == 1:
+                    actor_string = self.ent2lbl[actors[0]] + f" (imdb:{actor_ids[0]})"
+                else:
+                    for idx, actor in enumerate(actor_ids[:-1]):
+                        actor_string += self.ent2lbl[actors[idx]] + f" (imdb:{actor})" + ", "
+                    actor_string = actor_string[:-2] + " and " + self.ent2lbl[actors[-1]] + f" (imdb:{actor_ids[-1]})"
+            # build string with all movies
+            movie_string = ""
+            if len(movie_ids) > 0:
+                if len(movie_ids) == 1:
+                    movie_string = self.ent2lbl[movies[0]] + f" (imdb:{movie_ids[0]})"
+                else:
+                    for idx, movie in enumerate(movie_ids[:-1]):
+                        movie_string += self.ent2lbl[movies[idx]] + f" (imdb:{movie})" + ", "
+                    movie_string = movie_string[:-2] + " and " + self.ent2lbl[movies[-1]] + f" (imdb:{movie_ids[-1]})"
+            if actor_string != "" and movie_string != "":
+                return f"Look, I found an image of {actor_string} in {movie_string}.\n\n image:{image_url}"
+            elif actor_string != "":
+                return f"Nice, I found a great shot of {actor_string}.\n\n image:{image_url}"
+            elif movie_string != "":
+                return f"Well, I found this image of {movie_string}.\n\n image:{image_url}"
+            return f"Great, I found the image you were seeking.\n\n image:{image_url}"
         else:
             return "not found"
 
-    def query_graph(self, actors, movies, relation):
+    def query_graph(self, actors, movies):
         """
         Query the graph for the find the corresponding IMDB id
         and the image in the JSON file
@@ -83,33 +108,77 @@ class ImageQuestion:
         print(movie_ids)
 
         # catch if no actors or movies are found
-        if len(actor_ids) == 0 and len(movie_ids) == 0:
-            return None
-
-
-        # find the image in the JSON file
-        # check if an image is there
-        image_url_vague = None
-        for image in self.images:
-            if self.contains_list(actor_ids, image["cast"]) and self.contains_list(movie_ids, image["movie"]):
-                image_url_vague = image["img"].replace(".jpg", "")
-                break
-        if image_url_vague == None:
-            return None
-
-        # while loop to find a random image if there are multiple
         image_url = None
-        while image_url == None:
-            image = random.choice(self.images)
-            # exact match image url
-            if self.contains_list(actor_ids, image["cast"]) and len(image["cast"]) == len(actor_ids) and self.contains_list(movie_ids, image["movie"]): # TODO: poster or still?
-                image_url = image["img"].replace(".jpg", "")
-            # return the image url if not None
-            if image_url != None:
-                return image_url
-        # else return the vague image url
-        return image_url_vague
-
+        if len(movie_ids) > 1:
+            return None
+        elif len(actor_ids) == 0 and len(movie_ids) == 0:
+            return None
+        # if only actors are found
+        elif len(actor_ids) > 0 and len(movie_ids) == 0:
+            # find image in actor dict where all actors are in the actor list
+            pot_img = None
+            for actor_id in actor_ids:
+                if actor_id in self.actors:
+                    if pot_img == set():
+                        return None
+                    elif pot_img is None:
+                        pot_img = self.actors[actor_id]
+                    else:
+                        pot_img = set(pot_img).intersection(set(self.actors[actor_id]))
+                else:
+                    return None
+            if pot_img is not None and pot_img != set():
+                pot_img_len = [img for img in pot_img if img[1] == str(len(actor_ids))]
+                if pot_img_len != []:
+                    image = random.choice([img[0] for img in pot_img_len])
+                else:
+                    image = random.choice([img[0] for img in pot_img])
+                image_url = image.replace(".jpg", "")
+        # if only movies are found
+        elif len(actor_ids) == 0 and len(movie_ids) > 0:
+            # find image in movie dict where all movies are in the movie list
+            pot_img = None
+            for movie_id in movie_ids:
+                if movie_id in self.movies:
+                    if pot_img == set():
+                        return None
+                    elif pot_img is None:
+                        pot_img = self.movies[movie_id]
+                    else:
+                        pot_img = set(pot_img).intersection(set(self.movies[movie_id]))
+                else:
+                    return None
+            if pot_img is not None and pot_img != set():
+                image = random.choice([img[0] for img in pot_img])
+                image_url = image.replace(".jpg", "")
+        else:
+            # find image in actor and movie dicts where all actors and movies are in the actor and movie list
+            pot_img = None
+            for movie_id in movie_ids:
+                if movie_id in self.movies:
+                    if pot_img == set():
+                        return None
+                    elif pot_img is None:
+                        pot_img = self.movies[movie_id]
+                    else:
+                        pot_img = set(pot_img).intersection(set(self.movies[movie_id]))
+                else:
+                    return None
+            if pot_img is not None and pot_img != set():
+                pot_img = set(pot_img).intersection(set(self.actors[actor_ids[0]]))
+                for actor_id in actor_ids[1:]:
+                    if pot_img == set():
+                        return None
+                    pot_img = pot_img.intersection(set(self.actors[actor_id]))
+                if pot_img is not None and pot_img != set():
+                    pot_img_len = [img for img in pot_img if img[1] == str(len(actor_ids))]
+                    if pot_img_len != []:
+                        image = random.choice([img[0] for img in pot_img_len])
+                    else:
+                        image = random.choice([img[0] for img in pot_img])
+                    image_url = image.replace(".jpg", "")
+        # Finally, return the image url
+        return image_url, actor_ids, movie_ids
 
     def contains_list(self, list1, list2):
         """
@@ -120,7 +189,60 @@ class ImageQuestion:
                 return False
         return True
 
+    def load_actor_dict(self):
+        with open("data/Multimedia/actor_dict.pickle", "rb") as f:
+            actor_dict = pickle.load(f)
+        return actor_dict
+
+    def load_movie_dict(self):
+        with open("data/Multimedia/movie_dict.pickle", "rb") as f:
+            movie_dict = pickle.load(f)
+        return movie_dict
+
+
     def load_images(self):
         with open("data/Multimedia/images.pickle", "rb") as f:
             images = pickle.load(f)
         return images
+
+    def create_actor_dict(self):
+        """
+        Create a dictionary with the actor names as keys and the corresponding
+        images as value
+        """
+        actor_dict = {}
+        for image in self.images:
+            for actor in image["cast"]:
+                if actor not in actor_dict:
+                    actor_dict[actor] = []
+                actor_dict[actor].append((image["img"], len(image["cast"])))
+        # actor_dict to pickle
+        with open("data/Multimedia/actor_dict.pickle", "wb") as f:
+            pickle.dump(actor_dict, f)
+        return actor_dict
+
+    def create_movie_dict(self):
+        """
+        Create a dictionary with the movie names as keys and the corresponding
+        images as value
+        """
+        movie_dict = {}
+        for image in self.images:
+            for movie in image["movie"]:
+                if movie not in movie_dict:
+                    movie_dict[movie] = []
+                movie_dict[movie].append((image["img"], len(image["cast"])))
+        # movie_dict to pickle
+        with open("data/Multimedia/movie_dict.pickle", "wb") as f:
+            pickle.dump(movie_dict, f)
+        return movie_dict 
+
+if __name__ == "__main__":
+    # initialize the class
+    image = ImageQuestion(None, None, None, None, None, None, None)
+    # load the images
+    image.images = image.load_images()
+    # create the actor dictionary
+    image.create_actor_dict()
+    # create the movie dictionary
+    image.create_movie_dict()

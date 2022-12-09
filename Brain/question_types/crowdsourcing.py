@@ -15,7 +15,17 @@ class CrowdSource:
         """
         # check if subject and object in query are in the crowd sourced answers
         for val in subjects.values():
-            ent = self.lbl2ent[val]
+            print(val)
+            print(type(val))
+            # check if val is type list
+            if type(val) == list:
+                # first element of list
+                lbl = val[0]
+            else: 
+                lbl = val
+            print(lbl)
+            ent = self.lbl2ent[lbl]
+            print(ent)
         subject = ent.split('/')[-1]
         predicate = predicate.split('/')[-1]
         print(subject, predicate)
@@ -34,3 +44,7 @@ class CrowdSource:
                     if row['Subject'] == subject and row['Predicate'] == predicate:
                         return row['kappa'], row['support'], row['FixValue']
         return ('None', 'None', 'None')
+
+if __name__ == '__main__':
+    crowd = CrowdSource(None, None, None, None)
+    print(crowd.ask_crowd({'movie': ['The Dark Knight']}, 'http://www.wikidata.org/prop/direct/P161'))

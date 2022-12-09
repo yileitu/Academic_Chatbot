@@ -19,7 +19,16 @@ class EmbeddingSimilarity:
         Returns the closest entities to the tail found by TransE
         """
         # parsing inputs
-        subject = self.lbl2ent[list(subject.values())[0]]
+        s = list(v for v in subject.values())
+        # check if first element is a list
+        print(s)
+        if type(s[0]) == list:
+        #if type(s[0]) == list:
+            lbl = s[0][0]
+        else:
+            lbl = s[0]
+        print(lbl)
+        subject = self.lbl2ent[lbl]
         # entity embedding
         head = self.entity_emb[self.ent2id[subject]]
         # relation embedding
@@ -88,3 +97,7 @@ class EmbeddingSimilarity:
 
         # return the topn most plausible entities
         return label
+
+if __name__ == '__main__':
+    embed = EmbeddingSimilarity(None, None, None, None, None, None, None, None, None)
+    embed.most_similar({'director' : ['Tony Scott'], 'title': 'Top Gun'})

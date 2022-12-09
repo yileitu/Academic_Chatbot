@@ -29,7 +29,6 @@ class MovieRecommender:
 
         # if no movies are found, return none
         if len(rec_movies) > 0:    
-            print(rec_movies)
             # get the recommendations
             rec = self.get_recommendations(rec_movies)
             # get labels of the recommendations

@@ -8,30 +8,46 @@ class SPARQL:
         self.WD = WD
         print("SPARQL initialized")
 
-    def get_factual_answer(self, result: tuple):
+    def get_factual_answer(self, result: tuple, check: bool):
         """
         SPARQL query to get a factual answer from the Knowledge Graph
         """
         try:
             pred, entities, intent, classification, match = result
-            ent = ''
+            ents = []
             for val in match.values():
-                ent = self.lbl2ent[val]
-            print(ent)
-            query_template = "SELECT DISTINCT ?x ?y WHERE {{ <{}> <{}> ?x . }}".format(ent, intent)
-            print("--- sparql query: {}".format(query_template))
-            qres = self.graph.query(query_template)
-            answer = []
-            for row in qres:
-                if row.x in self.ent2lbl.keys():
-                    print(self.ent2lbl[row.x])
-                    answer.append(self.ent2lbl[row.x])
-                else:
-                    print(str(row.x))
-                    answer.append(str(row.x))
-            # if no answer is found, try to find a similar answer from embeddings
-            if answer == []:
+                if type(val) == list:
+                    for v in val:
+                        ents.append(self.lbl2ent[v])
+                else: ents.append(self.lbl2ent[val])
+            print(ents)
+            # check or not
+            if not check:
+                ents = [ents[0]]
+            elif len(ents) != 2:
                 return 'unknown'
+            print(ents)
+            answer = {}
+            for ent in ents:
+                answer[ent] = []
+                query_template = "SELECT DISTINCT ?x ?y WHERE {{ <{}> <{}> ?x . }}".format(ent, intent)
+                print("--- sparql query: {}".format(query_template))
+                qres = self.graph.query(query_template)
+                for row in qres:
+                    if row.x in self.ent2lbl.keys():
+                        print(self.ent2lbl[row.x])
+                        answer[ent].append(self.ent2lbl[row.x])
+                    else:
+                        print(str(row.x))
+                        answer[ent].append(str(row.x))
+            # if no answer is found, try to find a similar answer from embeddings
+            a = [a for a in answer.values()]
+            if len(a) == 1:
+                if a[0] == []:
+                    return "unknown"
+            else:
+                if a[0] == [] and a[1] == []:
+                    return "unknown"
             # parse intent to only keep the last part of the URI
             intent_uri = intent.split('/')[-1]
             # intent to wikidata property
@@ -39,32 +55,50 @@ class SPARQL:
         except:
             return "unknown"
         
-    def get_crowd_answer(self, result: tuple):
+    def get_crowd_answer(self, result: tuple, check: bool):
         """
         SPARQL query to get a factual answer from the Knowledge Graph
         """
         try:
             pred, entities, intent, classification, match, crowd = result
-            ent = ''
-            print(match)
+            ents = []
             for val in match.values():
-                ent = self.lbl2ent[val]
-            print(ent)
-            query_template = "SELECT DISTINCT ?x ?y WHERE {{ <{}> <{}> ?x . }}".format(ent, intent)
-            print("--- sparql query: {}".format(query_template))
-            qres = self.graph.query(query_template)
-            answer = []
-            for row in qres:
-                if row.x in self.ent2lbl.keys():
-                    print(self.ent2lbl[row.x])
-                    answer.append(self.ent2lbl[row.x])
-                else:
-                    print(str(row.x))
-                    answer.append(str(row.x))
+                if type(val) == list:
+                    for v in val:
+                        ents.append(self.lbl2ent[v])
+                else: ents.append(self.lbl2ent[val])
+            # check or not
+            if not check:
+                ents = [ents[0]]
+            elif len(ents) != 2:
+                return 'unknown'
+            print(ents)
+            answer = {}
+            for ent in ents:
+                answer[ent] = []
+                query_template = "SELECT DISTINCT ?x ?y WHERE {{ <{}> <{}> ?x . }}".format(ent, intent)
+                print("--- sparql query: {}".format(query_template))
+                qres = self.graph.query(query_template)
+                for row in qres:
+                    if row.x in self.ent2lbl.keys():
+                        print(self.ent2lbl[row.x])
+                        answer[ent].append(self.ent2lbl[row.x])
+                    else:
+                        print(str(row.x))
+                        answer[ent].append(str(row.x))
             # if no answer is found, try to find a similar answer from embeddings
-            if answer == []:
-                return "unknown"
+            a = [a for a in answer.values()]
+            if len(a) == 1:
+                if a[0] == []:
+                    return "unknown"
+            else:
+                if a[0] == [] and a[1] == []:
+                    return "unknown"
             # intent to wikidata property
             return crowd[0], int(crowd[1]), answer
         except:
             return "unknown"
+
+if __name__ == "__main__":
+    sparql = SPARQL(None, None, None, None, None, None)
+    print(sparql.get_factual_answer(('is', 'Q5', 'P31', 'class', {'title': ['Top Gun']}), True))
