@@ -24,19 +24,23 @@ class EntityRecognizer:
     # TODO: different crf models depending on input (upper/lower case, etc.)   
     # extract entities from text
     def extract_entities(self, text: str) -> tuple:
-        # tokenize text
-        tokens = word_tokenize(text)
-        # tag tokens
-        tagged = pos_tag(tokens)
-        # extract features
-        features = sent2features(tagged)
-        # predict entities
-        y_pred = self.crf.predict([features])
-        pred = []
-        for i, t in enumerate(tokens):
-            pred.append((t, y_pred[0][i]))
-        entities = pred2entity(pred)
-        return tagged, pred, entities
+        try:
+            # tokenize text
+            tokens = word_tokenize(text)
+            # tag tokens
+            tagged = pos_tag(tokens)
+            # extract features
+            features = sent2features(tagged)
+            # predict entities
+            y_pred = self.crf.predict([features])
+            pred = []
+            for i, t in enumerate(tokens):
+                pred.append((t, y_pred[0][i]))
+            entities = pred2entity(pred)
+            return tagged, pred, entities
+        except Exception as e:
+            print(e)
+            return {}, {}, {}
 
     def extract_recommender_entities(self, text: str) -> dict:
         try:
@@ -81,7 +85,8 @@ if __name__ == '__main__':
     text3 = 'Given that I like The Lion King, Pocahontas, and The Beauty and the Beast, can you recommend some movies?'
     text4 = 'Recommend movies like Nightmare on Elm Street, Friday the 13th, and Halloween.'
     text5 = 'what is the country of citizenship of Cho Geun-hyeon'
-    text6 = 'what should I watch if I liked The Avengers: Endgame, The Dark Knight, and The Lord of the Rings: The Return of the King?'
+    text6 = "Recommend movies like Forrest Gump, The Shawshank Redemption, and The Green Mile."
+    text7 = 'what should I watch if I liked The Avengers: Endgame, The Dark Knight, and The Lord of the Rings: The Return of the King?'
     ner = EntityRecognizer()
     # pos, pred, entities = ner.extract_entities(text1)
     # print(text)

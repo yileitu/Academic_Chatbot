@@ -65,7 +65,7 @@ class ResponseFormatter:
                     f"That would be {results[2]}."   
                 ]
         response = random.choice(responses)
-        return "<ATAI Bot: Factual>\n\n" + response[0].upper() + response[1:]
+        return response[0].upper() + response[1:]
 
     def natural_response_crowd(self, results, check, truth):
         """Returns a natural language string response to a crowd question."""
@@ -116,7 +116,7 @@ class ResponseFormatter:
                     f"It is {results[2]}, according to the crowd with an inter-rate agreement of {results[0]} in this batch and a support of {results[1]} out of 3 votes."
                 ]
         response = random.choice(responses)
-        return "<ATAI Bot: Crowd>\n\n" + response[0].upper() + response[1:]
+        return response[0].upper() + response[1:]
 
     def natural_response_embedding_one(self, results):
         """Returns a natural language string response to an embedding question."""
@@ -133,7 +133,8 @@ class ResponseFormatter:
             f"in my opinion, the answer could also be {results}, as suggested by embeddings.",
             f"if my embeddings are correct, I would say it should rather be {results}."
         ]
-        return random.choice(responses)
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
 
     def natural_response_embedding_several(self, results):
         """Returns a natural language string response (several) to an embedding question."""
@@ -153,7 +154,8 @@ class ResponseFormatter:
             f"Good question. I would say the {results[0]} of {results[1]} is most likely {results[2]}, {results[3]} or {results[4]}.",
             f"That's a tough one. I would say the {results[0]} of {results[1]} is probably {results[2]}, {results[3]} or {results[4]}."
         ]
-        return "<ATAI Bot: Factual>\n\n" + random.choice(responses)
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
 
     def natural_response_embedding_recommender(self, results):
         """Returns a natural language string response to recommend embedding answers."""
@@ -171,7 +173,8 @@ class ResponseFormatter:
             f"Definitely consider watching {results[0]}, {results[1]} or {results[2]}.",
             f"A good choice would be {results[0]}, {results[1]} or {results[2]}."
         ]
-        return "<ATAI Bot: Recommender>\n\n" + random.choice(responses)
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
 
 
     def natural_response_recommender(self, results): # TODO: answers based on response time (also images)
@@ -190,7 +193,8 @@ class ResponseFormatter:
             f"You have good taste. Based on the ratings of {results[3]} IMDb users I would recommend you to watch {results[4]} with an overall rating of {results[5]}.",
             f"Nice, you definitely know your movies. Based on the ratings of {results[3]} IMDb users I would recommend you to watch {results[4]} with an overall rating of {results[5]}."
         ]
-        return "<ATAI Bot: Recommender>\n\n" + random.choice(responses)
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
 
     def natural_response_negative(self):
         """Returns a natural language string response to 
@@ -206,7 +210,8 @@ class ResponseFormatter:
             "You're asking me a tough one. I don't know the answer to that.",
             "You seem to be an expert. Even my knowledge is not sufficient to answer this question."
         ]
-        return "<ATAI Bot: Negative>\n\n" + random.choice(responses)
+        response = random.choice(responses)
+        return response[0].upper() + response[1:], "Negative"
 
     def natural_response_unknown(self):
         """Returns a natural language string response to 
@@ -220,7 +225,8 @@ class ResponseFormatter:
             "I'm sorry, I don't know.",
             "Sorry, I have no clue..."
         ]
-        return "<ATAI Bot: Unknown>\n\n" + random.choice(responses)
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
 
     def natural_response_no_picture(self):
         """Returns a natural language string response to 
@@ -233,7 +239,8 @@ class ResponseFormatter:
             "They never took a picture.",
             "Damn, someone seems to be not very photogenic."
         ]
-        return "<ATAI Bot: Multimedia>\n\n" + random.choice(responses)
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
 
     def natural_response_msg_history(self):
         """Returns a natural language string response to 
@@ -246,7 +253,8 @@ class ResponseFormatter:
             "No worries, I'm happy to remind you again \U0001F609\n",
             "I have all the time in the world to tell you again \U0001F609\n"
         ]
-        return random.choice(responses)
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
 
 if __name__ == "__main__":
     response = ResponseFormatter(None, None, None, None, None, None)
