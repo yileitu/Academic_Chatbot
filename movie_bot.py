@@ -44,9 +44,9 @@ class MovieBot:
                         # send a welcome message and get the alias of the agent in the chatroom
                         # only if the agent was initiated before the chatroom was created
                         if room_start_time > self.start_time:
-                            start_message = 'Hi, I\'m an AI that loves movie trivia, so ask me about movies! ' \
+                            start_message = 'Hi, I\'m an AI that loves movie trivia, so ask me about movies!\n' \
                             + 'Specifically, I\'m able to answer the following types of questions: ' \
-                            + 'Factual, Checks (is it true that...), Embeddings, Crowdsourcing, Recommendations, Multimedia\n' \
+                            + 'Factual, Checks (is it true that...), Embeddings, Crowdsourcing, Recommendations and Multimedia.\n' \
                             + 'Also I appreciate feedback, so be sure to react to my messages (thumbs up, thumbs down, star) \U0001F600'
                             ai = f"<AI> <br> " + start_message.replace('\n', '<br>')
                             print(ai)
@@ -255,7 +255,8 @@ class MovieBot:
                 self.message_queue.task_done()
             except Exception as e:
                 print("Error:", e)
-                return ResponseFormatter.natural_response_unknown(self=ResponseFormatter)
+                self.post_message(room_id=room_id, session_token=self.session_token, message=ResponseFormatter.natural_response_unknown(self=ResponseFormatter))
+                self.message_queue.task_done()
 
 
 if __name__ == '__main__':

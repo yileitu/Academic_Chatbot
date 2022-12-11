@@ -211,7 +211,7 @@ class ResponseFormatter:
             "You seem to be an expert. Even my knowledge is not sufficient to answer this question."
         ]
         response = random.choice(responses)
-        return response[0].upper() + response[1:], "Negative"
+        return response[0].upper() + response[1:]
 
     def natural_response_unknown(self):
         """Returns a natural language string response to 
