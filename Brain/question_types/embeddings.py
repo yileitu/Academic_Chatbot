@@ -71,17 +71,14 @@ class EmbeddingSimilarity:
             movie = self.lbl2ent[movie]
             # entity embeddings
             head = self.entity_emb[self.ent2id[movie]]
-            print(head)
 
             # compute distance to *any* entity
             if distances is None:
                 distances = pairwise_distances(head.reshape(1, -1), self.entity_emb).reshape(-1)
-                print(distances)
             else: distances += pairwise_distances(head.reshape(1, -1), self.entity_emb).reshape(-1)
 
         # average distances
         distances = distances / len(rec_movies)
-        print(distances)
         
         # find most plausible tails
         most_likely = np.argsort(distances)

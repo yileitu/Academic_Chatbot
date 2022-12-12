@@ -80,12 +80,11 @@ def question_patterns() -> dict: # TODO: extend with more patterns
                                    "I really like watching A, what else should I watch?",
                                    "What should I watch if I like A, B and C?",
                                    "Give me some movie recommendations similar to B."],
-                "multimedia": ["Show me a picture of X.",
+                "multimedia": ["Show me a picture of XY.",
                                 "What does Y look like?",
                                 "Let me know what XY looks like.",
                                 "Picture of YZ.",
-                                "Show me a picture of Z.",
-                                "Show me a picture of ZA.",
+                                "Do you have a picture of XY?",
                                 "I wonder what a A looks like."]}
     return patterns
 
@@ -103,7 +102,7 @@ if __name__ == '__main__':
     text3 = "What is the filming location of Avatar?"
     text4 = "Who is the father of Tom Hanks?"
     text5 = "what is the country of citizenship of Cho Geun-hyeon?"
-    text6 = "Who directed The Bridge on the River Kwai?"
+    text6 = "What is the place of burial of Günter Grass?"
     print(clean_text(text6))
     #embed_patterns()
     sim = question_similarity(clean_text(text6))

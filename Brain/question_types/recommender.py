@@ -31,14 +31,8 @@ class MovieRecommender:
         if len(rec_movies) > 0:    
             # get the recommendations
             rec = self.get_recommendations(rec_movies)
-            # get labels of the recommendations
-            # # split uri from entity
-            # rec_uri = []
-            # for r in rec['qid']:
-            #     rec_uri.append(r.split('/')[-1])
-            # # get labels
-            # rec_lbl = [self.ent2lbl[self.WD[q]] for q in rec_uri]
 
+            # similar movies
             sim_movies = []
             for i, r in rec.iterrows():
                 sim_movies.append({'title': r['Title'], 'rating': r['IMDb Rating'], 'nr_voters': r['Num Votes']})
@@ -81,10 +75,6 @@ class MovieRecommender:
         # return the top 10 most similar movies
         sim_movies = self.plots.iloc[movie_indices]
         return sim_movies
-
-        # # sort the movies based on the imdb rating from file
-        # sim_movies_rated = sorted(sim_movies, key=lambda x: self.plots[self.plots['qid'] == x]['IMDb Rating'].values[0], reverse=True) # TODO: enable/disable rating-based filtering (surprise)?
-        # return sim_movies_rated # TODO: return top 10 similar movies and the movie that is best rated (inkl. rating and nr voters)
 
 if __name__ == '__main__':
     recommender = MovieRecommender(None, None, None, None, None, None)

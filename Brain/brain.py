@@ -39,23 +39,6 @@ class Brain:
         int_text = intent_text(text, pos, pred)
         recognizer = IntentRecognizer()
         movie_intent = recognizer.extract_intent(int_text)
-        # user_intent = ''
-        # # fuzzy match of movie intent and self.entities
-        # #tokens = text.split()
-        # min_dist = 1000
-        # for int in movie_intent:
-        #     #for token in tokens:
-        #     # match substring of intent with text
-        #     if int != None:
-        #         clean_int = int[0].split('/')[-1]
-        #         print(self.rel2lbl[self.WDT[clean_int]], ldist(self.rel2lbl[self.WDT[clean_int]], int_text))
-        #         if ldist(self.rel2lbl[self.WDT[clean_int]], int_text) < min_dist: # TODO: 100% accurate matching
-        #             min_dist = ldist(self.rel2lbl[self.WDT[clean_int]], int_text)
-        #             user_intent = int[0]   
-        #     # for ent in self.entities.keys():
-        #     #     if ent.lower() in int[1].lower():
-        #     #         user_intent = int[0]
-        # if user_intent == '':
         if movie_intent[0] != None:
             user_intent = movie_intent[0][0]
         else: user_intent = "No intent found"

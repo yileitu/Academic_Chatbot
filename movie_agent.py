@@ -46,22 +46,18 @@ class MovieAgent:
         similarity = question_similarity(text_clean)
         print(similarity)
         if similarity == 'factual':
-            #time.sleep(1) # TODO: remove?
             response = self.factual_query(text_clean)
         elif similarity == 'check':
-            #time.sleep(1)
             response = self.factual_query(text_clean, True)
         elif similarity == 'recommendation':
             response = self.movie_query(text_clean)
         elif similarity == 'multimedia':
-            #time.sleep(1)
             response = self.image_query(text_clean)
         else:
-            #time.sleep(1)
             response = self.response.natural_response_unknown()
         return response
 
-    def factual_query(self, text: str, check=False) -> tuple: # TODO: answer for cast members (and others?) should output a list of entities!!!
+    def factual_query(self, text: str, check=False) -> tuple:
         """
         Returns the answer to a factual question
         """
@@ -75,13 +71,11 @@ class MovieAgent:
         sparql = SPARQL(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.WDT, self.WD)
         crowd = self.crowdsourcing.ask_crowd(match, intent)
         emb_answer = self.embedding_sim.most_similar(match, intent, 10) # TODO: several matches?
-        print(emb_answer)
         for e in emb_answer:
             if e in match.values():
                 emb_answer.remove(e)
         if crowd != ('None', 'None', 'None'):
             answer = sparql.get_crowd_answer((pred, entities, intent, classification, match, crowd), check)
-            print(answer)
             if answer == 'unknown':
                 if check == True or emb_answer[0] == 'Not found':
                     return self.response.natural_response_negative(), match, intent, "Negative"
@@ -95,7 +89,6 @@ class MovieAgent:
             else:
                 # check if fact is correct
                 keys = [key for key in answer[2].keys()]
-                print(keys)
                 if self.ent2lbl[keys[0]] in answer[2][keys[1]] or self.ent2lbl[keys[1]] in answer[2][keys[0]]:
                     truth = True
                 else:
@@ -109,7 +102,6 @@ class MovieAgent:
                 print(truth)
             return self.response.natural_response_crowd(answer, check, truth), match, intent, "Crowd"
         answer = sparql.get_factual_answer((pred, entities, intent, classification, match), check)
-        print(answer)
         if answer == 'unknown':
             if check == True or emb_answer[0] == 'Not found':
                 return self.response.natural_response_negative(), match, intent, "Negative"
