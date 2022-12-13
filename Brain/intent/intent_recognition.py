@@ -13,11 +13,17 @@ class IntentRecognizer:
 
     # load trained intent model
     def load_intent_model(self):
+        """
+        Load Sentence-Transformer model
+        """
         model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
         return model
 
     # extract intent from text
     def extract_intent(self, text: str) -> list:
+        """
+        Extracts intent from text using embeddings created by Sentence-Transformer.
+        """
         # load expanded graph properties
         dirname = os.path.dirname(__file__)
         properties_exp = pd.read_csv(os.path.join(

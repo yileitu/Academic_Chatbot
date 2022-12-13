@@ -177,7 +177,7 @@ class ResponseFormatter:
         return response[0].upper() + response[1:]
 
 
-    def natural_response_recommender(self, results): # TODO: answers based on response time (also images)
+    def natural_response_recommender(self, results):
         """Returns a natural language string response to recommend movies."""
         # several options for natural language responses
         try:
@@ -196,6 +196,68 @@ class ResponseFormatter:
         response = random.choice(responses)
         return response[0].upper() + response[1:]
 
+    def natural_response_recommender_multi(self, results):
+        """Returns a natural language string response to recommend movies for multiple user preferences."""
+        # several options for natural language responses
+        try:
+            results = f"{results[0]} (wd:{self.lbl2ent[results[0]].split('/')[-1]})", f"{results[1]} (wd:{self.lbl2ent[results[1]].split('/')[-1]})", f"{results[2]} (wd:{self.lbl2ent[results[2]].split('/')[-1]})", results[3], f"{results[4]} (wd:{self.lbl2ent[results[4]].split('/')[-1]})", results[5]
+        except Exception as e:
+            print(e)
+        responses = [
+            f"I had to think about that one for a bit. Similar movies are {results[0]}, {results[1]} or {results[2]}. Based on the ratings of {results[3]} IMDb users I would recommend you to watch {results[4]} with an overall rating of {results[5]}.",
+            f"Mmmh, difficult to say but I think you might like {results[0]}, {results[1]} or {results[2]}. Based on the ratings of {results[3]} IMDb users I would recommend you to watch {results[4]} with an overall rating of {results[5]}.",
+            f"That's not an easy one. Based on the ratings of {results[3]} IMDb users I would recommend you to watch {results[4]} with an overall rating of {results[5]}.",
+            f"Sorry to keep you waiting. Seeing that {results[3]} IMDb users rated {results[4]} with an overall rating of {results[5]}, I would recommend you to watch {results[4]}.",
+            f"Damn you're challenging me quite a bit. You will probably like {results[0]}, {results[1]} or {results[2]}. Based on the ratings of {results[3]} IMDb users your top pick is {results[4]} with an overall rating of {results[5]}.",
+            f"You have good taste. Based on the ratings of {results[3]} IMDb users I would recommend you to watch {results[4]} with an overall rating of {results[5]}.",
+            f"Nice, you definitely know your movies. Based on the ratings of {results[3]} IMDb users I would recommend you to watch {results[4]} with an overall rating of {results[5]}."
+        ]
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
+
+    def natural_response_multimedia(self, results, media):
+        """Returns a natural language string response to show pictures."""
+        # several options for natural language responses
+        try:
+            if media == "both":
+                actor_string, movie_string, image_url = results
+                responses = [
+                    f"This took a while. But look, I found an image of {actor_string} in {movie_string} \U0001F600 image:{image_url}",
+                    f"Nice, I found a great shot of {actor_string} in {movie_string} \U0001F600 image:{image_url}",
+                    f"Great, I found the image of {actor_string} in {movie_string} you were seeking \U0001F600 image:{image_url}",
+                    f"Well, the effort paid of and I found this image of {actor_string} in {movie_string} \U0001F600 image:{image_url}",
+                ]
+            elif media == "actor":
+                actor_string, image_url = results
+                responses = [
+                    f"Look, I found an image of {actor_string} \U0001F600 image:{image_url}",
+                    f"Nice, I found a great shot of {actor_string} \U0001F600 image:{image_url}",
+                    f"Great, I found the image of {actor_string} you were seeking \U0001F600 image:{image_url}",
+                    f"Well, I found this image of {actor_string} \U0001F600 image:{image_url}"
+                ]
+            elif media == "movie":
+                movie_string, image_url = results
+                responses = [
+                    f"Look, I found an image of {movie_string} \U0001F600 image:{image_url}",
+                    f"Nice, I found a great shot of {movie_string} \U0001F600 image:{image_url}",
+                    f"Great, I found the image of {movie_string} you were seeking \U0001F600 image:{image_url}",
+                    f"Well, I found this image of {movie_string} \U0001F600 image:{image_url}"
+                ]
+            else:
+                image_url = results
+                responses = [
+                    f"Look, I found the image you were looking for \U0001F600 image:{image_url}",
+                    f"Nice, I found a great shot \U0001F600 image:{image_url}",
+                    f"Great, I found an image you were seeking \U0001F600 image:{image_url}",
+                    f"Well, this one was in the very back of my camera roll \U0001F600 image:{image_url}"
+                ]
+            response = random.choice(responses)
+            return response[0].upper() + response[1:]
+        except Exception as e:
+            print(e)
+            return "Sorry, I couldn't find any images."
+
+
     def natural_response_negative(self):
         """Returns a natural language string response to 
         a question where the answer is not known."""
@@ -208,7 +270,8 @@ class ResponseFormatter:
             "I don't know the answer to that. I'm sorry.",
             "Wow that's a tough one. I don't know the answer to that.",
             "You're asking me a tough one. I don't know the answer to that.",
-            "You seem to be an expert. Even my knowledge is not sufficient to answer this question."
+            "You seem to be an expert. Even my knowledge is not sufficient to answer this question.",
+            "Sorry, I have no clue..."
         ]
         response = random.choice(responses)
         return response[0].upper() + response[1:]
@@ -219,11 +282,11 @@ class ResponseFormatter:
         # several options for natural language responses
         responses = [
             "Could you rephrase that?",
-            "I'm sorry, I don't understand.",
-            "I don't understand.",
-            "I'm afraid I don't understand.",
-            "I'm sorry, I don't know.",
-            "Sorry, I have no clue..."
+            "I'm sorry, I don't understand. What do you mean?",
+            "I don't understand. Could you repeat that?",
+            "I'm afraid I don't understand. Please rephrase that.",
+            "I'm sorry, I don't know. What exactly are you referring to?",
+            "Maybe I am misunderstanding you. Could you rephrase that?"          
         ]
         response = random.choice(responses)
         return response[0].upper() + response[1:]
@@ -252,6 +315,64 @@ class ResponseFormatter:
             "Sure, I'll gladly remind you again \U0001F609\n",
             "No worries, I'm happy to remind you again \U0001F609\n",
             "I have all the time in the world to tell you again \U0001F609\n"
+        ]
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
+
+    def natural_response_feedback_thumbs_star(self):
+        """Returns a natural language string response to 
+        a thumbs up or star reaction to get feedback."""
+        # several options for natural language responses
+        responses = [
+            "Thanks for the feedback! What has made this answer so special? \U0001F600",
+            "Thanks for the feedback! What specifically did you like from my response? \U0001F600",
+            "Thanks a lot, I'm happy to hear that! What sparked your curiosity from this response? \U0001F600",
+            "Great to hear that! What did you like from my response? \U0001F600",
+            "Thanks a lot, I'm happy to hear that! What has made this answer so special? \U0001F600"
+        ]
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
+
+    def natural_response_feedback_thumbs_down(self):
+        """Returns a natural language string response to 
+        a negative reaction to get feedback."""
+        # several options for natural language responses
+        responses = [
+            "Thanks for the feedback! Since you seem to be an expert, could you tell me what was wrong with my answer? \U0001F648",
+            "Thanks for the feedback! What specifically did you not like from my response? \U0001F648",
+            "That's unfortunate, I'm sorry to hear that! What was wrong with my response? \U0001F648",
+            "I'm sorry to hear that! How can I improve? \U0001F648",
+            "Thanks for the feedback! What has made this answer so bad? \U0001F648"
+        ]
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
+
+    def natural_response_feedback_pos(self):
+        """Returns a natural language string response to 
+        a positive feedback."""
+        # several options for natural language responses
+        responses = [
+            "You're a great person! \U0001F60A",
+            "Thank you for your feedback! \U0001F60A",
+            "I'm glad you liked it! \U0001F60A",
+            "I'm happy to hear that! \U0001F60A",
+            "I'm glad you enjoyed it! \U0001F60A",
+            "I'm happy to hear that you enjoyed it! \U0001F60A"
+        ]
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
+    
+    def natural_response_feedback_neg(self):
+        """Returns a natural language string response to 
+        a negative feedback."""
+        # several options for natural language responses
+        responses = [
+            "I'm sorry you didn't like it. I'll try my best to improve! \U0001F61E",
+            "I'm sorry you didn't like it. I'll try to improve! \U0001F61E",
+            "I'll try to do better next time! \U0001F61E",
+            "Sorry about that, I'll try to do better next time! \U0001F61E",
+            "Your feedback is very important to me. I'll try to do better next time! \U0001F61E",
+            "I will improve my performance next time! \U0001F61E"
         ]
         response = random.choice(responses)
         return response[0].upper() + response[1:]

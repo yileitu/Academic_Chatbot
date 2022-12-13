@@ -121,7 +121,7 @@ def match_entities(lst: bool, key, ent, exact_match, ent2lbl, WD, actors, direct
         else: exact_match[key] = closest_match
     return exact_match
 
-def check_entity_types(key: str, closest_match: str, actors, directors, characters, genres, movies) -> str: # TODO: better engineering
+def check_entity_types(key: str, closest_match: str, actors, directors, characters, genres, movies) -> str:
     """
     Check if the entity types match with entity types in the graph
     """

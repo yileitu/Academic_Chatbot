@@ -14,16 +14,10 @@ class EntityRecognizer:
             self.model = AutoModelForTokenClassification.from_pretrained("dslim/bert-base-NER-uncased")
             self.pipe = pipeline(model=self.model, tokenizer=self.tokenizer, task='ner')
 
-    # # load trained crf model
-    # def load_crf_model(self):
-    #     dirname = os.path.dirname(__file__)
-    #     with open(os.path.join(dirname, 'model/mycrf.pickle'), 'rb') as f:
-    #         crf = pickle.load(f)
-    #     return crf
-
-    # TODO: different crf models depending on input (upper/lower case, etc.)   
-    # extract entities from text
     def extract_entities(self, text: str) -> tuple:
+        """
+        Extracts entities from text using a CRF model, NLTK tokens and POS tags.
+        """
         try:
             # tokenize text
             tokens = word_tokenize(text)
@@ -43,6 +37,9 @@ class EntityRecognizer:
             return {}, {}, {}
 
     def extract_recommender_entities(self, text: str) -> dict:
+        """
+        Extracts entities from text using a pretrained BERT model.
+        """
         try:
             # NER pipeline
             ner = self.pipe(text)

@@ -81,6 +81,8 @@ def question_patterns() -> dict: # TODO: extend with more patterns
                                    "What should I watch if I like A, B and C?",
                                    "Give me some movie recommendations similar to B."],
                 "multimedia": ["Show me a picture of XY.",
+                                "Show me a picture of XY and YZ.",
+                                "Show me a picture of XY and YZ in the movie ZA.",
                                 "What does Y look like?",
                                 "Let me know what XY looks like.",
                                 "Picture of YZ.",
@@ -91,8 +93,7 @@ def question_patterns() -> dict: # TODO: extend with more patterns
 def clean_text(text: str) -> str:
         text = text.replace('?', '')
         text = text.replace('!', '')
-        text = text.replace('.', '') # TODO: What to remove?
-        #text = text.replace(',', '')
+        text = text.replace('.', '')
         return text
         
 if __name__ == '__main__':

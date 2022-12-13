@@ -1,6 +1,5 @@
 from Levenshtein import distance as ldist
 
-# TODO: intelligence for chatbot
 from Brain.ner.entity_matcher import EntityMatcher
 from Brain.ner.entity_recognizer import EntityRecognizer
 from Brain.intent.intent_recognition import IntentRecognizer
@@ -20,22 +19,48 @@ class Brain:
 
     # named entity recognition
     def ner(self, text: str) -> tuple:
+        """
+        Extracts entities from text using a CRF model.
+        """
         # entities from entity recognizer
         casing = detect_casing(text)
         crf = load_crf_model(casing)
         movie_ner = EntityRecognizer(crf)
         pos, pred, entities = movie_ner.extract_entities(text)
+        if entities == {}:
+            if casing == 'uncased':
+                crf = load_crf_model('cased')
+            elif casing == 'cased':
+                crf = load_crf_model('uncased')
+            movie_ner = EntityRecognizer(crf)
+            pos, pred, entities = movie_ner.extract_entities(text)
         print(entities)
         return pos, pred, entities
 
     def recommender_ner(self, text: str) -> dict:
+        """
+        Extracts entities from text using a BERT model.
+        """
         rec_ner = EntityRecognizer()
         entities = rec_ner.extract_recommender_entities(text)
+        # CRF as fallback
+        if entities['title'] == [] and entities['actor'] == []:
+            pos, pred, ents = self.ner(text)
+            entities = {'title': [], 'actor': []} 
+            for key in ents.keys():
+                if key in ['title', 'actor']:
+                    if type(ents[key]) == list:
+                        entities[key] = ents[key]
+                    else: 
+                        entities[key].append(ents[key])
         print(entities)
         return entities
 
     # intent recognition
     def intent(self, text: str, pos: list, pred: list) -> str:
+        """
+        Extracts intent from text using embeddings.
+        """
         int_text = intent_text(text, pos, pred)
         recognizer = IntentRecognizer()
         movie_intent = recognizer.extract_intent(int_text)
@@ -44,29 +69,11 @@ class Brain:
         else: user_intent = "No intent found"
         return user_intent
 
-    # TODO: complete different classes
-    # classification of entities
-    def ent_classifier(self, entities: dict) -> dict:
-        ent_class = {}
-        for ent in entities.keys():
-            if ent == 'title':
-                ent_class[ent] = 'movie'
-            elif ent == 'actor':
-                ent_class[ent] = 'actor'
-            elif ent == 'director':
-                ent_class[ent] = 'director'
-            elif ent == 'genre':
-                ent_class[ent] = 'genre'
-            elif ent == 'character':
-                ent_class[ent] = 'character'
-            elif ent == 'year':
-                ent_class[ent] = 'year'
-            else:
-                ent_class[ent] = 'unknown'
-        return ent_class
-
     # find entities in Knowledge Graph
     def ent_matcher(self, entities: dict) -> dict:
+        """
+        Matches entities to nodes in the Knowledge Graph.
+        """
         matcher = self.matcher
         entity = matcher.match(entities)
         return entity
@@ -77,4 +84,4 @@ if __name__ == '__main__':
     text = 'Who is the director of Top Gun: Maverick?'
     brain = Brain(text)
     print(text)
-    print(brain.classification)
+    pos, pred, entities = brain.ner(text)

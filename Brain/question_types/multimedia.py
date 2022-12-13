@@ -68,14 +68,14 @@ class ImageQuestion:
                         movie_string += self.ent2lbl[movies[idx]] + f" (imdb:{movie})" + ", "
                     movie_string = movie_string[:-2] + " and " + self.ent2lbl[movies[-1]] + f" (imdb:{movie_ids[-1]})"
             if actor_string != "" and movie_string != "":
-                return f"Look, I found an image of {actor_string} in {movie_string} \U0001F600 image:{image_url}"
+                return (actor_string, movie_string, image_url), "both"
             elif actor_string != "":
-                return f"Nice, I found a great shot of {actor_string} \U0001F600 image:{image_url}"
+                return (actor_string, image_url), "actor"
             elif movie_string != "":
-                return f"Well, I found this image of {movie_string} \U0001F600 image:{image_url}"
-            return f"Great, I found the image you were seeking \U0001F600 image:{image_url}"
+                return (movie_string, image_url), "movie"
+            return (image_url), "image"
         else:
-            return "not found"
+            return "not found", "image"
 
     def query_graph(self, actors, movies):
         """

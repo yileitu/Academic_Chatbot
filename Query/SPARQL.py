@@ -13,7 +13,7 @@ class SPARQL:
         SPARQL query to get a factual answer from the Knowledge Graph
         """
         try:
-            pred, entities, intent, classification, match = result
+            pred, entities, intent, match = result
             ents = []
             for val in match.values():
                 if type(val) == list:
@@ -60,7 +60,7 @@ class SPARQL:
         SPARQL query to get a factual answer from the Knowledge Graph
         """
         try:
-            pred, entities, intent, classification, match, crowd = result
+            pred, entities, intent, match, crowd = result
             ents = []
             for val in match.values():
                 if type(val) == list:
