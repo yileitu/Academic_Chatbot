@@ -38,11 +38,19 @@ class MovieAgent:
         self.response = ResponseFormatter(self.ent2lbl, self.lbl2ent, self.rel2lbl, self.lbl2rel, self.WD, self.WDT)
         print('Movie agent initialized')
 
-    def user_wish(self, text: str) -> str:
+    def user_wish(self, text: str) -> tuple:
         """
         Returns the answer to the user input
         """
         text_clean = clean_text(text)
+        # check for greeting
+        if text_clean.lower() in ['greeting', 'hi', 'nice to meet you', 'nice to meet you too', 'hi, nice to meet you too', 'hi, nice to meet you', 'hello', 'hey', 'hey there', 'hello there', 'hi there']:
+            time.sleep(1)
+            return "Heey, anything I can help you with?", None, None, "Unknown"
+        # check for goodbye
+        if text_clean.lower() in ['goodbye', 'bye', 'see you', 'see you later', 'see you soon', 'see you later alligator', 'see you soon alligator']:
+            time.sleep(1)
+            return "See you later!", None, None, "Unknown"
         similarity = question_similarity(text_clean)
         print(similarity)
         if similarity == 'factual':
@@ -65,7 +73,7 @@ class MovieAgent:
             truth = False
             pos, pred, entities = self.brain.ner(text)
             if entities == {}:
-                return self.response.natural_response_unknown(), None, None, "Unknown"
+                return self.response.natural_response_unknown_fact(), None, None, "Unknown"
             match = self.brain.ent_matcher(entities)
             intent = self.brain.intent(text, pos, pred)
             sparql = SPARQL(self.graph, self.ent2lbl, self.lbl2ent, self.rel2lbl, self.WDT, self.WD)
@@ -132,7 +140,7 @@ class MovieAgent:
             return self.response.natural_response_factual(answer, check, truth) + " " + "However, " + self.response.natural_response_embedding_one(emb_answer[0]), match, intent, "Factual"
         except Exception as e:
             print(e)
-            return self.response.natural_response_unknown(), None, None, "Unknown"
+            return self.response.natural_response_unknown_fact(), None, None, "Unknown"
 
     def image_query(self, text: str) -> tuple:
         """

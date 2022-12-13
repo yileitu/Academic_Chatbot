@@ -15,17 +15,13 @@ class CrowdSource:
         """
         # check if subject and object in query are in the crowd sourced answers
         for val in subjects.values():
-            print(val)
-            print(type(val))
             # check if val is type list
             if type(val) == list:
                 # first element of list
                 lbl = val[0]
             else: 
                 lbl = val
-            print(lbl)
             ent = self.lbl2ent[lbl]
-            print(ent)
         subject = ent.split('/')[-1]
         predicate = predicate.split('/')[-1]
         print(subject, predicate)

@@ -291,6 +291,20 @@ class ResponseFormatter:
         response = random.choice(responses)
         return response[0].upper() + response[1:]
 
+    def natural_response_unknown_fact(self):
+        """Returns a natural language string response to 
+        a misunderstood question (factual)."""
+        # several options for natural language responses
+        responses = [
+            "Hmm, in case you have an answer in mind I can check if it is true.",
+            "Sorry, not sure I understand. Should you already have a guess, I can check if it is true :)",
+            "Could you repeat that? Or even better, do you have a guess? I can check if it is true :)",
+            "I'm afraid I don't understand. Maybe a guess would help to kickstart my memory to check if it is true :)",
+            "What exactly are you referring to? Maybe you already have a guess I could confirm?"        
+        ]
+        response = random.choice(responses)
+        return response[0].upper() + response[1:]
+
     def natural_response_no_picture(self):
         """Returns a natural language string response to 
         a misunderstood question or where the answer is not known (pictures)."""

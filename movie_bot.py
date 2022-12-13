@@ -11,7 +11,7 @@ from Response.response import ResponseFormatter
 
 # url of the speakeasy server
 url = 'https://speakeasy.ifi.uzh.ch'
-listen_freq = 1  # seconds
+listen_freq = 0.5  # seconds
 
 
 class MovieBot:
@@ -42,16 +42,9 @@ class MovieBot:
                         # send a welcome message and get the alias of the agent in the chatroom
                         # only if the agent was initiated before the chatroom was created
                         if room_start_time > self.start_time:
-                            start_message1 = 'Hi, nice to meet you. I love movie trivia, so ask me about movies! \U0001F600'
-                            start_message2 = 'Specifically, I fancy talking about movie facts, give recommendations and provide you with the latest shots from my camera roll. ' \
-                            + 'Since my knowledge isn\'t perfect I might need to ask the crowd from time to time or check some facts (is it true that...) \U0001F9D0'
-                            start_message3 = 'Also I appreciate feedback, so be sure to react to my messages (thumbs up, thumbs down, star) \U0001F60A'
+                            start_message = 'Hi, nice to meet you! I love movie trivia, so ask me about movies! \U0001F600'
                             time.sleep(1)
-                            self.post_message(room_id=room_id, session_token=self.session_token, message=start_message1)
-                            time.sleep(1)
-                            self.post_message(room_id=room_id, session_token=self.session_token, message=start_message2)
-                            time.sleep(1)
-                            self.post_message(room_id=room_id, session_token=self.session_token, message=start_message3)
+                            self.post_message(room_id=room_id, session_token=self.session_token, message=start_message)
                         else:
                             self.post_message(room_id=room_id, session_token=self.session_token, message='Sorry, just had a mental breakdown. I am back now! \U0001F600')
                         self.chat_state[room_id]['initiated'] = True
