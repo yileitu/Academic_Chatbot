@@ -126,12 +126,12 @@ class ResponseFormatter:
         except Exception as e:
             print(e)
         responses = [
-            f"I feel that the answer could also be {results}, based on my embeddings.",
-            f"I think it might also be {results}, suggested by my embeddings.",
-            f"I would say {results} would also be a correct answer, as suggested by my embeddings.",
-            f"I would guess it might actually be {results}, based on my embeddings.",
-            f"in my opinion, the answer could also be {results}, as suggested by embeddings.",
-            f"if my embeddings are correct, I would say it should rather be {results}."
+            f"I feel that the answer could also be {results}.",
+            f"I think it might also be {results}.",
+            f"I would say {results} might also be a correct answer.",
+            f"I would guess it might actually be {results}.",
+            f"in my opinion, the answer could also be {results}.",
+            f"my gut feeling tells me it might also be {results}."
         ]
         response = random.choice(responses)
         return response[0].upper() + response[1:]
@@ -352,12 +352,12 @@ class ResponseFormatter:
         a positive feedback."""
         # several options for natural language responses
         responses = [
-            "You're a great person! \U0001F60A",
+            "You're a great person! \U0001F60D",
             "Thank you for your feedback! \U0001F60A",
-            "I'm glad you liked it! \U0001F60A",
-            "I'm happy to hear that! \U0001F60A",
+            "I'm glad you liked it! \U0001F60D",
+            "I'm happy to hear that! \U0001F60D",
             "I'm glad you enjoyed it! \U0001F60A",
-            "I'm happy to hear that you enjoyed it! \U0001F60A"
+            "I'm happy to hear that you enjoyed it! \U0001F60D"
         ]
         response = random.choice(responses)
         return response[0].upper() + response[1:]

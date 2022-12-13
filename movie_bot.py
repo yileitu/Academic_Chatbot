@@ -42,10 +42,10 @@ class MovieBot:
                         # send a welcome message and get the alias of the agent in the chatroom
                         # only if the agent was initiated before the chatroom was created
                         if room_start_time > self.start_time:
-                            start_message1 = 'Hi, nice to meet you. I love movie trivia, so ask me about movies!\n'
-                            start_message2 = 'Specifically, I fancy talking about movie facts, give recommendations and provie you with the latest shots from my camera roll. ' \
-                            + 'Since my knowledge isn\'t perfect I might need to ask the crowd from time to time or check some facts (is it true that...).\n'
-                            start_message3 = 'Also I appreciate feedback, so be sure to react to my messages (thumbs up, thumbs down, star) \U0001F600'
+                            start_message1 = 'Hi, nice to meet you. I love movie trivia, so ask me about movies! \U0001F600'
+                            start_message2 = 'Specifically, I fancy talking about movie facts, give recommendations and provide you with the latest shots from my camera roll. ' \
+                            + 'Since my knowledge isn\'t perfect I might need to ask the crowd from time to time or check some facts (is it true that...) \U0001F9D0'
+                            start_message3 = 'Also I appreciate feedback, so be sure to react to my messages (thumbs up, thumbs down, star) \U0001F60A'
                             time.sleep(1)
                             self.post_message(room_id=room_id, session_token=self.session_token, message=start_message1)
                             time.sleep(1)
@@ -154,14 +154,13 @@ class MovieBot:
             print('- Session \'{}\' successfully logged out!'.format(self.session_token))
             # when logout save the reactions
             print(self.feedback)
-            with open('data/feedback/feedback' + f'{self.get_time()}' + '.json', 'w') as f:
+            with open('data/feedback/feedback_' + f'{self.get_time()}' + '.json', 'w') as f:
                 json.dump(self.feedback, f)
 
     def agent_response(self, message, room_id):
         """This function is used to post the agent response to Speakeasy."""
         try:
             # print start message
-            #self.post_message(room_id=room_id, session_token=self.session_token, message='Thinking...') 
             t = self.multi_thread(message, room_id)
             print(t)
             if not t:
