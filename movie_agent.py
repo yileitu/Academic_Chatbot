@@ -45,16 +45,18 @@ class MovieAgent:
         text_clean = clean_text(text)
         # check for greeting
         if text_clean.lower() in ['greeting', 'hi', 'nice to meet you', 'nice to meet you too', 'hi, nice to meet you too', 'hi, nice to meet you', 'hello', 'hey', 'hey there', 'hello there', 'hi there']:
-            time.sleep(1)
-            return "Heey, anything I can help you with?", None, None, "Unknown"
+            time.sleep(2)
+            return "Hey, is there anything you wanna talk about? :)", None, None, "Unknown"
         # check for goodbye
         if text_clean.lower() in ['goodbye', 'bye', 'see you', 'see you later', 'see you soon', 'see you later alligator', 'see you soon alligator']:
-            time.sleep(1)
+            time.sleep(2)
             return "See you later!", None, None, "Unknown"
         similarity = question_similarity(text_clean)
         print(similarity)
+        # check time
+        time_before = time.localtime()
         if similarity == 'factual':
-            response = self.factual_query(text_clean)
+            response = self.factual_query(text_clean)                
         elif similarity == 'check':
             response = self.factual_query(text_clean, True)
         elif similarity == 'recommendation':
@@ -62,7 +64,12 @@ class MovieAgent:
         elif similarity == 'multimedia':
             response = self.image_query(text_clean)
         else:
-            response = self.response.natural_response_unknown()
+            response = self.response.natural_response_unknown(), None, None, "Unknown"
+        # get time difference
+        time_after = time.localtime()
+        # if time difference is less than 2 seconds, wait 1 second (appear more human like)
+        if (time_after.tm_sec - time_before.tm_sec) < 2:
+            time.sleep(1)
         return response
 
     def factual_query(self, text: str, check=False) -> tuple:

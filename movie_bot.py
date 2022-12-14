@@ -43,7 +43,7 @@ class MovieBot:
                         # only if the agent was initiated before the chatroom was created
                         if room_start_time > self.start_time:
                             start_message = 'Hi, nice to meet you! I love movie trivia, so ask me about movies! \U0001F600'
-                            time.sleep(1)
+                            time.sleep(2)
                             self.post_message(room_id=room_id, session_token=self.session_token, message=start_message)
                         else:
                             self.post_message(room_id=room_id, session_token=self.session_token, message='Sorry, just had a mental breakdown. I am back now! \U0001F600')
@@ -220,4 +220,13 @@ if __name__ == '__main__':
     pwd_file = open('Credentials/pass.txt', 'r')
     password = pwd_file.read().replace('\n', '')
     moviebot = MovieBot(username, password)
-    moviebot.movie_chat()
+    # connection loop to Speakeasy
+    while True:
+        try:    
+            moviebot.movie_chat()
+        except Exception as e:
+            print('Error: {}'.format(e))
+        except KeyboardInterrupt:
+            print("Keyboard interrupt")
+            # end loop
+            break
