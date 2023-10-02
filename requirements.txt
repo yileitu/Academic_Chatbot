@@ -1,0 +1,9 @@
+nltk==3.8.1
+numpy==1.24.3
+pandas==1.5.3
+python_Levenshtein==0.22.0
+rdflib==7.0.0
+Requests==2.31.0
+scikit_learn==1.1.2
+sentence_transformers==2.2.2
+transformers==4.33.3
