@@ -51,3 +51,17 @@ FROM <http://aida.kmi.open.ac.uk/resource>
 WHERE {
     ?title dc:title "application independent rendering of scorecard metrics" .
 } 
+
+-- Counts how many papers have been written by authors from an institution such as eth zurich.
+PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
+PREFIX cso: <http://cso.kmi.open.ac.uk/topics/>
+PREFIX schema: <http://schema.org/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?author (count(?paper) as ?npaper)
+FROM <http://aida.kmi.open.ac.uk/resource>
+WHERE {
+    ?paper schema:creator ?author .
+    ?author schema:memberOf ?aff .
+    ?aff foaf:name "eth_zurich" .
+}
+ORDER BY DESC(?npaper)
