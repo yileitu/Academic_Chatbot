@@ -65,3 +65,17 @@ WHERE {
     ?aff foaf:name "eth_zurich" .
 }
 ORDER BY DESC(?npaper)
+
+-- This line uses a regex pattern to match variations of "eth zurich."
+-- The pattern "eth\\s*zurich" is used to match "eth" followed by zero or more spaces (\\s*) and then "zurich." This allows for variations like "ethzurich," "eth zurich," "ETH Zurich," etc., since the "i" in the regex function makes the search case-insensitive.
+
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
+PREFIX schema: <http://schema.org/>
+SELECT ?paper 
+FROM <http://aida.kmi.open.ac.uk/resource>
+WHERE {
+    ?paper schema:creator ?author .
+    ?author schema:memberOf ?aff .
+    FILTER regex(str(?aff), "eth\\s*zurich", "i") # Added line for fuzzy search
+}
