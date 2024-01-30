@@ -97,3 +97,14 @@ WHERE {
 ORDER BY DESC(?count)
 LIMIT 100
 
+-- Distinct affiliations, first 100 observations
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
+PREFIX cso: <http://cso.kmi.open.ac.uk/topics/>
+PREFIX schema: <http://schema.org/>
+SELECT DISTINCT ?aff_name 
+FROM <http://aida.kmi.open.ac.uk/resource>
+WHERE {
+    ?aff foaf:name ?aff_name
+} 
+LIMIT 100
