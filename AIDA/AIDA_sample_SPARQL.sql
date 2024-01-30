@@ -79,3 +79,21 @@ WHERE {
     ?author schema:memberOf ?aff .
     FILTER regex(str(?aff), "eth\\s*zurich", "i") # Added line for fuzzy search
 }
+
+-- The following query returns the industrial sectors of all the papers having Semantic Web as a topic.
+-- Useful to check the universities are written
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
+PREFIX cso: <http://cso.kmi.open.ac.uk/topics/>
+PREFIX schema: <http://schema.org/>
+SELECT ?aff ?aff_name 
+FROM <http://aida.kmi.open.ac.uk/resource>
+WHERE {
+    ?paper aida:hasTopic cso:semantic_web .
+    ?paper schema:creator ?author .
+    ?author schema:memberOf ?aff .
+    ?aff foaf:name ?aff_name
+} GROUP BY ?aff ?aff_name
+ORDER BY DESC(?count)
+LIMIT 100
+
