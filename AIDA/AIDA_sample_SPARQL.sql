@@ -65,3 +65,48 @@ WHERE {
     ?aff foaf:name "eth_zurich" .
 }
 ORDER BY DESC(?npaper)
+
+-- This line uses a regex pattern to match school names with zurich in it, 
+-- e.g., eth zurich, uni zurich, zurich_university_of_the_arts
+-- the fuzzy match pattern can be constructed via FILTER regex(string, pattern, "flags")
+-- "i" flag means case-insensitive.
+PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
+PREFIX schema: <http://schema.org/>
+SELECT ?paper ?aff_name
+FROM <http://aida.kmi.open.ac.uk/resource>
+WHERE {
+    ?paper schema:creator ?author .
+    ?author schema:memberOf ?aff .
+  	?aff foaf:name ?aff_name
+    FILTER regex(?aff_name, "zurich", "i")
+}
+
+
+-- The following query returns the industrial sectors of all the papers having Semantic Web as a topic.
+-- Useful to check the universities are written
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
+PREFIX cso: <http://cso.kmi.open.ac.uk/topics/>
+PREFIX schema: <http://schema.org/>
+SELECT ?aff ?aff_name 
+FROM <http://aida.kmi.open.ac.uk/resource>
+WHERE {
+    ?paper aida:hasTopic cso:semantic_web .
+    ?paper schema:creator ?author .
+    ?author schema:memberOf ?aff .
+    ?aff foaf:name ?aff_name
+} GROUP BY ?aff ?aff_name
+ORDER BY DESC(?count)
+LIMIT 100
+
+-- Distinct affiliations, first 100 observations
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
+PREFIX cso: <http://cso.kmi.open.ac.uk/topics/>
+PREFIX schema: <http://schema.org/>
+SELECT DISTINCT ?aff_name 
+FROM <http://aida.kmi.open.ac.uk/resource>
+WHERE {
+    ?aff foaf:name ?aff_name
+} 
+LIMIT 100
