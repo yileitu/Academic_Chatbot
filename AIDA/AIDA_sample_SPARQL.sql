@@ -66,19 +66,21 @@ WHERE {
 }
 ORDER BY DESC(?npaper)
 
--- This line uses a regex pattern to match variations of "eth zurich."
--- The pattern "eth\\s*zurich" is used to match "eth" followed by zero or more spaces (\\s*) and then "zurich." This allows for variations like "ethzurich," "eth zurich," "ETH Zurich," etc., since the "i" in the regex function makes the search case-insensitive.
-
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+-- This line uses a regex pattern to match school names with zurich in it, 
+-- e.g., eth zurich, uni zurich, zurich_university_of_the_arts
+-- the fuzzy match pattern can be constructed via FILTER regex(string, pattern, "flags")
+-- "i" flag means case-insensitive.
 PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
 PREFIX schema: <http://schema.org/>
-SELECT ?paper 
+SELECT ?paper ?aff_name
 FROM <http://aida.kmi.open.ac.uk/resource>
 WHERE {
     ?paper schema:creator ?author .
     ?author schema:memberOf ?aff .
-    FILTER regex(str(?aff), "eth\\s*zurich", "i") # Added line for fuzzy search
+  	?aff foaf:name ?aff_name
+    FILTER regex(?aff_name, "zurich", "i")
 }
+
 
 -- The following query returns the industrial sectors of all the papers having Semantic Web as a topic.
 -- Useful to check the universities are written
