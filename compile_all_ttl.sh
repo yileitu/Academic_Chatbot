@@ -19,4 +19,4 @@ tail -n +18 "$file" > "temp_$file" && mv "temp_$file" "$file"; done
 cat ../declaration.ttl papers_* > all.ttl
 
 grep '@prefix' all.ttl | wc -l
-# which returns 17
+# which should return 17
