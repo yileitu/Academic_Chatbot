@@ -150,3 +150,11 @@ SELECT ?name
 WHERE {
   <http://aida.kmi.open.ac.uk/resource/2120300748> foaf:name ?name .
 }
+
+-- Return aff name given its uri
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?name
+WHERE {
+  <http://aida.kmi.open.ac.uk/resource/2990878173> foaf:name ?name .
+}
