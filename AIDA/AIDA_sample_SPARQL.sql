@@ -110,3 +110,11 @@ WHERE {
     ?aff foaf:name ?aff_name
 } 
 LIMIT 100
+
+-- Return paper title given its uri
+PREFIX dc: <http://purl.org/dc/terms/>
+
+SELECT ?title
+WHERE {
+  <http://aida.kmi.open.ac.uk/resource/2885914489> dc:title ?title .
+}
