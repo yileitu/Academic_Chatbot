@@ -70,6 +70,7 @@ ORDER BY DESC(?npaper)
 -- e.g., eth zurich, uni zurich, zurich_university_of_the_arts
 -- the fuzzy match pattern can be constructed via FILTER regex(string, pattern, "flags")
 -- "i" flag means case-insensitive.
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
 PREFIX schema: <http://schema.org/>
 SELECT ?paper ?aff_name
