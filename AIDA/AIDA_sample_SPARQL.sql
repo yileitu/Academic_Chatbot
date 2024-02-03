@@ -70,6 +70,7 @@ ORDER BY DESC(?npaper)
 -- e.g., eth zurich, uni zurich, zurich_university_of_the_arts
 -- the fuzzy match pattern can be constructed via FILTER regex(string, pattern, "flags")
 -- "i" flag means case-insensitive.
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
 PREFIX schema: <http://schema.org/>
 SELECT ?paper ?aff_name
@@ -110,3 +111,50 @@ WHERE {
     ?aff foaf:name ?aff_name
 } 
 LIMIT 100
+
+-- Count unique affiliations (26048450)
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
+PREFIX cso: <http://cso.kmi.open.ac.uk/topics/>
+PREFIX schema: <http://schema.org/>
+SELECT (COUNT(?aff) as ?count) 
+FROM <http://aida.kmi.open.ac.uk/resource>
+WHERE {
+  	?aff foaf:name ?aff_name  .
+}
+
+-- Count unique papers (20850710)
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX aida:<http://aida.kmi.open.ac.uk/ontology#>
+PREFIX schema: <http://schema.org/>
+PREFIX dc: <http://purl.org/dc/terms/>
+SELECT (COUNT(?paper) as ?count) 
+FROM <http://aida.kmi.open.ac.uk/resource>
+WHERE {
+    ?paper dc:title ?title .
+}
+
+
+-- Return paper title given its uri
+PREFIX dc: <http://purl.org/dc/terms/>
+
+SELECT ?title
+WHERE {
+  <http://aida.kmi.open.ac.uk/resource/2885914489> dc:title ?title .
+}
+
+-- Return author name given its uri
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?name
+WHERE {
+  <http://aida.kmi.open.ac.uk/resource/2120300748> foaf:name ?name .
+}
+
+-- Return aff name given its uri
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?name
+WHERE {
+  <http://aida.kmi.open.ac.uk/resource/2990878173> foaf:name ?name .
+}
