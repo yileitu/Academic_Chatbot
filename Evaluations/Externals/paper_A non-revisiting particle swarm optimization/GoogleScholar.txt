@@ -1,0 +1,2 @@
+https://scholar.google.com/scholar?q=related:FQkMuoKljdUJ:scholar.google.com/&scioq=A+non-revisiting+particle+swarm+optimization&hl=en&as_sdt=0,5
+Select top 5 (apart from itself) the articles from the list. 

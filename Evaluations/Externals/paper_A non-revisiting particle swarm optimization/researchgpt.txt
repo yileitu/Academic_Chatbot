@@ -1,4 +1,4 @@
-[LLM/DB:]
+[LLM:]
 https://chat.portal.so/
 
 [Question:]

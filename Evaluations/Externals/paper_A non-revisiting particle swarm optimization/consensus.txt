@@ -1,0 +1,26 @@
+
+[AI:]
+https://consensus.app/search/
+
+[Question:]
+Recommend me the top papers similar to "A non-revisiting particle swarm optimization".
+
+[Answers:]
+
+Here are some top papers related to "A non-revisiting particle swarm optimization":
+
+1. Jin, N., & Rahmat-Samii, Y. (2007). Advances in Particle Swarm Optimization for Antenna Designs: Real-Number, Binary, Single-Objective and Multiobjective Implementations. [IEEE Transactions on Antennas and Propagation](https://consensus.app/papers/advances-particle-swarm-optimization-antenna-designs-jin/650842697d5653e380e2f42a5921c9c9/?utm_source=chatgpt).
+
+2. Selvakumar, A., & Thanushkodi, K. (2007). A New Particle Swarm Optimization Solution to Nonconvex Economic Dispatch Problems. [IEEE Transactions on Power Systems](https://consensus.app/papers/particle-swarm-optimization-solution-nonconvex-economic-selvakumar/60fa3d0ab92955ae9129ba7a65bbf106/?utm_source=chatgpt).
+
+3. Mendes, R., Kennedy, J., & Neves, J. (2004). The fully informed particle swarm: simpler, maybe better. [IEEE Transactions on Evolutionary Computation](https://consensus.app/papers/fully-informed-particle-swarm-simpler-maybe-better-mendes/452567fd19ba50f0944a3dd0b252da03/?utm_source=chatgpt).
+
+4. Boeringer, D., & Werner, D. (2004). Particle swarm optimization versus genetic algorithms for phased array synthesis. [IEEE Transactions on Antennas and Propagation](https://consensus.app/papers/particle-swarm-optimization-versus-algorithms-phased-boeringer/1c0ffbc136a15750bd79ffdf2c7cefb4/?utm_source=chatgpt).
+
+5. AlRashidi, M., & El-Hawary, M. (2009). A Survey of Particle Swarm Optimization Applications in Electric Power Systems. [IEEE Transactions on Evolutionary Computation](https://consensus.app/papers/survey-particle-swarm-optimization-applications-alrashidi/3f5ae8b3d9875bf9a94007693f2b93fa/?utm_source=chatgpt).
+
+These papers cover a range of applications and advancements in particle swarm optimization, from antenna designs to economic dispatch problems in power systems, offering a comprehensive view of the field.
+
+For more AI-powered insights, go to [consensus.app](https://consensus.app/?utm_source=chatgpt).
+
+[See "Consensus_Recommend me the top papers similar to A non-revisiting particle swarm optimization. - 12 Feb 2024.csv"]

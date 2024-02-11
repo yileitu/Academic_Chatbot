@@ -1,0 +1,28 @@
+[LLM:]
+https://chat.openai.com/*/*-scispace
+
+[Question:]
+Recommend me the top papers similar to "A non-revisiting particle swarm optimization".
+
+[Answers:]
+Based on the top papers related to "A non-revisiting particle swarm optimization," the following insights are provided:
+
+1. **A non-revisiting particle swarm optimization** - Introduces a non-revisiting scheme in particle swarm optimization to enhance performance by avoiding previously visited areas in the search space.
+2. **A non-revisiting quantum-behaved particle swarm optimization based multilevel thresholding for image segmentation** - Applies a non-revisiting approach in quantum-behaved particle swarm optimization for effective image segmentation.
+3. **Continuous non-revisiting genetic algorithm** - Proposes a continuous non-revisiting strategy in genetic algorithms, enhancing efficiency by preventing redundant search.
+4. **Non-revisiting genetic algorithm with adaptive mutation using constant memory** - Integrates adaptive mutation in a non-revisiting genetic algorithm, optimizing memory usage while maintaining diversity.
+5. **Restarting Particle Swarm Optimisation for deceptive problems** - Discusses a restarting mechanism in particle swarm optimization to tackle deceptive problems, complementing non-revisiting strategies.
+
+For detailed insights and further research, you can visit the provided links to each paper.
+
+| S.No. | Paper Title | Insight |
+|-------|-------------|---------|
+| 1     | [A non-revisiting particle swarm optimization](https://typeset.io/papers/a-non-revisiting-particle-swarm-optimization-3kvubfu5ua?utm_source=chatgpt) | Introduces a non-revisiting scheme to enhance performance by avoiding previously visited areas. |
+| 2     | [A non-revisiting quantum-behaved particle swarm optimization based multilevel thresholding for image segmentation](https://typeset.io/papers/a-non-revisiting-quantum-behaved-particle-swarm-optimization-3bex2vx1br?utm_source=chatgpt) | Applies a non-revisiting approach in quantum-behaved PSO for effective image segmentation. |
+| 3     | [Continuous non-revisiting genetic algorithm](https://typeset.io/papers/continuous-non-revisiting-genetic-algorithm-2ncx7egxh6?utm_source=chatgpt) | Proposes a continuous non-revisiting strategy in genetic algorithms to enhance efficiency. |
+| 4     | [Non-revisiting genetic algorithm with adaptive mutation using constant memory](https://typeset.io/papers/non-revisiting-genetic-algorithm-with-adaptive-mutation-4m20p9mics?utm_source=chatgpt) | Integrates adaptive mutation in a non-revisiting GA, optimizing memory usage. |
+| 5     | [Restarting Particle Swarm Optimisation for deceptive problems](https://typeset.io/papers/restarting-particle-swarm-optimisation-for-deceptive-15db32x8ge?utm_source=chatgpt) | Discusses a restarting mechanism in PSO to tackle deceptive problems, complementing non-revisiting strategies. |
+
+For a more detailed search, please refer to: https://typeset.io/search?q=A%20non-revisiting%20particle%20swarm%20optimization
+
+Feel free to ask more questions or request further information on specific papers!
