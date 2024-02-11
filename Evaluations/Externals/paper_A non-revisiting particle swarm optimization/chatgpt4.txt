@@ -1,0 +1,18 @@
+[LLM:]
+https://chat.openai.com/*
+
+[Question:]
+Recommend me the top papers similar to "A non-revisiting particle swarm optimization".
+
+[Answers:]
+Based on your interest in "A non-revisiting particle swarm optimization," I found several related papers that delve into similar and advanced concepts in the field of optimization algorithms.
+
+1. **Quantum-behaved particle swarm optimization based on solitons**: This paper introduces a variant of the quantum particle swarm optimization algorithm. It is based on the quantum concept of particle-like solitons, providing a novel approach to optimization problems【5†source】.
+
+2. **A Quantum-Behaved Particle Swarm Optimization Algorithm on Riemannian Manifolds**: This research proposes a quantum-behaved particle swarm optimization algorithm on Riemannian manifolds, named RQPSO. It is notable for its application in both differentiable and non-differentiable engineering technical problems, demonstrating versatility in solving complex optimization issues【6†source】.
+
+3. **Non-revisiting Stochastic Search Revisited: Results, Perspectives, and Future Directions**: This paper reviews various history-driven algorithms, including history-driven scout bee ABC (HdABC) and history-driven ABC (Hd-ABC), which employ adaptive mutation strategies. These approaches show enhanced performance in solving synthetic problems and data clustering compared to traditional methods【7†source】.
+
+These papers represent significant advancements in the field of particle swarm optimization and related algorithms, offering insights into quantum behavior, adaptation to complex manifolds, and history-driven approaches for optimization. They could provide valuable perspectives and methodologies related to your area of interest.
+
+Check out these [search results](https://chat.openai.com/backend-api/bing/redirect?query=papers%20similar%20to%20%27A%20non-revisiting%20particle%20swarm%20optimization%27) for more details.
