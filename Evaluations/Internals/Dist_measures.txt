@@ -1,0 +1,22 @@
+# Manhattan
+relation between joint optimizations for multiuser mimo uplink and downlink with imperfect csi :  26.60618481133133
+a modified membrane inspired algorithm based on particle swarm optimization for mobile robot path planning :  27.269826508301776
+integrating schemas of heterogeneous relational databases through schema matching :  27.320744274184108
+image processor and image display :  27.484722226392478
+simple garbage bag bracket :  27.54701428115368
+
+# Euclidean
+relation between joint optimizations for multiuser mimo uplink and downlink with imperfect csi :  5.518166
+interference cancellation in multiuser acoustic underwater networks using probabilistic sdma :  5.827957
+on the reversibility of live equal conflict petri nets :  5.854251
+a modified membrane inspired algorithm based on particle swarm optimization for mobile robot path planning :  5.9183106
+towards a sdn based architecture for analyzing network traffic in cloud computing infrastructures :  5.957182
+
+# Dot product 
+
+# Cosine Similarity
+on the reversibility of live equal conflict petri nets :  0.49472785
+simple garbage bag bracket :  0.49390805
+mergers and acquisitions management new directions editorial :  0.49175948
+image processor and image display :  0.4813009
+relation between joint optimizations for multiuser mimo uplink and downlink with imperfect csi :  0.47264177

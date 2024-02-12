@@ -1,0 +1,46 @@
+[LLM:]
+https://www.perplexity.ai/search/Recommend-me-the-*qNB.REdZQAS1y6OlXc5pTA?s=u*
+
+[Question:]
+Recommend me the top papers similar to "A non-revisiting particle swarm optimization".
+
+[Answers:]
+The top papers similar to "A non-revisiting particle swarm optimization" include:
+
+1. "A non-revisiting genetic algorithm based on a novel binary space"[2]
+2. "A non-revisiting quantum-behaved particle swarm optimization based multilevel thresholding for image segmentation"[3]
+3. "A non-revisiting quantum-behaved particle swarm optimization"[4]
+
+These papers are related to the concept of non-revisiting optimization algorithms, particularly in the context of genetic algorithms and quantum-behaved particle swarm optimization. They can provide valuable insights and further research opportunities in this area.
+
+Citations:
+[1] http://ieeexplore.ieee.org/document/4631045/similar
+[2] https://www.sciencedirect.com/science/article/abs/pii/S0020025519309739
+[3] https://www.researchgate.net/publication/332583645_A_non-revisiting_quantum-behaved_particle_swarm_optimization_based_multilevel_thresholding_for_image_segmentation
+[4] https://search.proquest.com/openview/1551e600788205fe5d358ddc362b2a80/1?cbl=2043988&pq-origsite=gscholar
+[5] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10237448/
+
+[Question:]
+Recommend me the top five papers similar to "A non-revisiting particle swarm optimization".
+
+[Answers:]
+The top five papers similar to "A non-revisiting particle swarm optimization" are:
+
+1. "An Improved Particle Swarm Optimization with Mutation Based on Similarity" - This paper presents an improved particle swarm optimization technique with a focus on mutation and similarity[1].
+
+2. "A non-revisiting genetic algorithm based on a novel binary space" - The paper introduces a non-revisiting genetic algorithm based on a novel binary space, which is related to the concept of non-revisiting optimization algorithms[2].
+
+3. "Non-revisiting genetic algorithm with adaptive mutation using ..." - This paper discusses a non-revisiting genetic algorithm with adaptive mutation, which is relevant to the topic of non-revisiting optimization algorithms[4].
+
+4. "A non-revisiting quantum-behaved particle swarm optimization based multilevel thresholding for image segmentation" - This paper explores a non-revisiting quantum-behaved particle swarm optimization approach for image segmentation, which is related to the concept of non-revisiting particle swarm optimization[3].
+
+5. "A Genetic Algorithm That Adaptively Mutates and Never Revisits" - This paper presents a genetic algorithm that adaptively mutates and never revisits, which is relevant to the concept of non-revisiting optimization algorithms[5].
+
+These papers cover various aspects of non-revisiting optimization algorithms, including genetic algorithms, particle swarm optimization, and adaptive mutation. They can provide valuable insights for further research in this field.
+
+Citations:
+[1] https://www.researchgate.net/publication/232655832_An_Improved_Particle_Swarm_Optimization_with_Mutation_Based_on_Similarity
+[2] https://www.sciencedirect.com/science/article/abs/pii/S0020025519309739
+[3] http://ieeexplore.ieee.org/document/4631045/similar
+[4] https://www.semanticscholar.org/paper/Non-revisiting-genetic-algorithm-with-adaptive-Lou-Yuen/3c6cfb6922c6efa6cd93dca95c8a164f79e3f1d2
+[5] https://www.researchgate.net/publication/220381202_A_Genetic_Algorithm_That_Adaptively_Mutates_and_Never_Revisits

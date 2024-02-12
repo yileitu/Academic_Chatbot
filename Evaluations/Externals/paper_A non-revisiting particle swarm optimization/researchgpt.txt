@@ -1,0 +1,25 @@
+[LLM:]
+https://chat.portal.so/
+
+[Question:]
+Recommend me the top papers similar to "A non-revisiting particle swarm optimization".
+
+[Answers:]
+I'm glad to help you find relevant papers to "A non-revisiting particle swarm optimization" while adhering to your specified guidelines. Here are some highly regarded papers related to particle swarm optimization (PSO) algorithms that you might find interesting:
+
+1. Kennedy, J., & Eberhart, R. C. (1995). Particle swarm optimization. In Proceedings of IEEE international conference on neural networks (ICNN'95) (pp. 1942-1948). IEEE.
+   (The original paper introducing the PSO concept.)
+
+2. Ratnaweera, A., Halgamuge, S. K., & Watson, T. J. (2004). Self-organizing hierarchical particle swarm optimizer with time-varying acceleration coefficients. IEEE transactions on evolutionary computation, 8(6), 637-651.
+   (An extension to the original PSO algorithm, incorporating time-varying acceleration coefficients and self-organizing hierarchical structures.)
+
+3. Shi, Y., & Eberhart, R. C. (1998). A modified particle swarm optimizer. In Proceedings of the IEEE international conference on evolutionary computation (ICEC’98) (pp. 69-73). IEEE.
+   (An improvement to the original PSO algorithm, introducing inertia weight for better exploration and exploitation.)
+
+4. Clerc, M. (2006). The swarm and the ant: A particle swarm optimizer using ants as neighborhood guides. In Parallel Problem Solving from Nature–PPSN VIII (pp. 628-637). Springer.
+   (A variant of PSO using ants as neighborhood guides for better exploration.)
+
+5. Van den Bergh, J. (2002). On the convergence of the global best particle swarm optimizer. In Parallel Problem Solving from Nature–PPSN VII (pp. 842-851). Springer.
+   (A theoretical analysis of the convergence properties of the global best PSO algorithm.)
+
+These papers should provide a solid foundation for understanding and extending particle swarm optimization techniques. I hope you find them helpful!
