@@ -68,7 +68,7 @@ if __name__ == "__main__":
 	# 	print(f"Query: {query}\nSPARQL Query: {sparql_query}\nResult IDs: {result_ids}\n")
 
 	example_queries2 = [
-		"Find papers similar to Quantum Computing",
+		"Find papers similar to 'Light incorporating a clip and bottle opener'",
 		"Who are authors like John Doe?",
 		"List publications from MIT",
 		]
