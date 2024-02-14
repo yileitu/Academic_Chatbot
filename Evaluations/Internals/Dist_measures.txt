@@ -13,6 +13,11 @@ a modified membrane inspired algorithm based on particle swarm optimization for 
 towards a sdn based architecture for analyzing network traffic in cloud computing infrastructures :  5.957182
 
 # Dot product 
+mergers and acquisitions management new directions editorial :  18.831442
+simple garbage bag bracket :  17.383738
+image processor and image display :  17.353468
+on the reversibility of live equal conflict petri nets :  16.452757
+an efficient algorithm of performing range analysis for fixed point arithmetic circuits based on sat checking :  16.137836
 
 # Cosine Similarity
 on the reversibility of live equal conflict petri nets :  0.49472785
