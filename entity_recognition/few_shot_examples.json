@@ -1,0 +1,43 @@
+[
+  {
+    "text": "Recommended some similar papers to AutoMix: Automatically Mixing Language Models by Aman Madaan et al. at CMU.",
+    "spans": [
+      {
+        "text": "papers",
+        "is_entity": false,
+        "label": "==NONE==",
+        "reason": "is not a name of a scientific literature."
+      },
+      {
+        "text": "AutoMix",
+        "is_entity": false,
+        "label": "==NONE==",
+        "reason": "is part of the paper title, but not intact or complete. 'AutoMix: Automatically Mixing Language Models' is an intact paper title."
+      },
+      {
+        "text": "AutoMix: Automatically Mixing Language Models",
+        "is_entity": true,
+        "label": "PAPER",
+        "reason": "is an intact paper title"
+      },
+      {
+        "text": "AutoMix: Automatically Mixing Language Models by Aman Madaan",
+        "is_entity": false,
+        "label": "==NONE==",
+        "reason": "including the author name is not a paper title."
+      },
+      {
+        "text": "AutoMix: Automatically Mixing Language Models by Aman Madaan et al",
+        "is_entity": false,
+        "label": "==NONE==",
+        "reason": "including the author name is not a paper title."
+      },
+      {
+        "text": "AutoMix: Automatically Mixing Language Models by Aman Madaan at CMU",
+        "is_entity": false,
+        "label": "==NONE==",
+        "reason": "including the author name or institution name is not a paper title."
+      }
+    ]
+  }
+]
